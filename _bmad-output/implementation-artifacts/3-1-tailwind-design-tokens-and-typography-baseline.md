@@ -1,6 +1,6 @@
 # Story 3.1: Tailwind design tokens and typography baseline
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -119,7 +119,8 @@ GPT-5.2 (Cursor agent)
 ### File List
 
 - `client/package.json`
-- `client/package-lock.json`
+- `package-lock.json` (workspace root; client deps hoisted here)
+- `client/index.html`
 - `client/vite.config.ts`
 - `client/src/index.css`
 - `client/src/main.tsx` (unchanged import path; global CSS via `./index.css`)
@@ -133,7 +134,18 @@ GPT-5.2 (Cursor agent)
 ### Change Log
 
 - 2026-04-09: Story 3.1 — Tailwind v4 + Vite plugin, semantic `@theme` tokens, dark-first baseline, placeholder UI, Vitest token pipeline test; sprint status `in-progress` → `review`.
+- 2026-04-09: Code review batch patches — `App.tsx` a11y, `index.html` title, test cleanup, remove orphaned SVGs, File List lockfile note; status `review` → `done`.
+
+### Review Findings
+
+- [x] [Review][Patch] Static error preview uses `role="status"` on non-updating copy — remove live-region semantics or use a non-live pattern [`client/src/App.tsx`] — fixed (removed `role="status"`)
+- [x] [Review][Patch] Orphaned starter assets — delete or re-home unreferenced `react.svg` / `vite.svg` under `client/src/assets/` — fixed (removed `react.svg`, `vite.svg`, and unused `hero.png`; removed empty `client/src/assets/`)
+- [x] [Review][Patch] Redundant assertion — drop `expect(container.firstChild).toBeTruthy()` in `DesignSurfaceSample.test.tsx` — fixed
+- [x] [Review][Patch] Generic document title — align `client/index.html` `<title>` with Todo app baseline — fixed (`Todo app`)
+- [x] [Review][Patch] File List accuracy — lockfile for workspace deps is root `package-lock.json`; correct Dev Agent Record File List — fixed
+- [x] [Review][Defer] `--color-focus-ring` defined but sample button uses `ring-fg-primary` — deferred; comment reserves token for later controls [`client/src/index.css`, `client/src/App.tsx`] — deferred, pre-existing intent per Dev Notes
+- [x] [Review][Defer] Responsive base font size — prior scaffold reduced font on narrow viewports; new global `1rem` only — verify mobile readability in UX pass [`client/src/index.css`] — deferred, pre-existing tradeoff from simplification
 
 ---
 
-**Story completion status:** Implementation complete — ready for code review.
+**Story completion status:** Done — code review patches applied; deferred items tracked in `deferred-work.md`.

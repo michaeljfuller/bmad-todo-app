@@ -23,10 +23,7 @@ function App() {
           >
             Primary action
           </button>
-          <p
-            className="rounded-md border border-fg-error/40 bg-surface-error px-3 py-2 text-sm text-fg-error"
-            role="status"
-          >
+          <p className="rounded-md border border-fg-error/40 bg-surface-error px-3 py-2 text-sm text-fg-error">
             Error message preview
           </p>
         </div>

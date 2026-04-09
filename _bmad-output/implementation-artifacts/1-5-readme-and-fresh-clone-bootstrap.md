@@ -1,6 +1,6 @@
 # Story 1.5: README and fresh-clone bootstrap
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -18,21 +18,21 @@ so that **a new machine can go from clone to first successful dev + unit + E2E s
 
 ## Tasks / Subtasks
 
-- [ ] **Audit actual scripts** (AC: 1)
-  - [ ] Read root **`package.json`** (from Story 1.3) and **`client/`**, **`api/`**, **`e2e/`** package scripts; README commands must match **real** script names and working directory (root vs package).
-  - [ ] Document **exact** sequence: clone → install (root and/or workspaces per repo) → copy **`.env.example`** → `playwright install` (root or `e2e/` per config).
-- [ ] **Bootstrap automation** (AC: 1)
-  - [ ] Add **`bootstrap`** or **`setup`** script at root **or** document a **single copy-paste block** that performs install + env copy + `npx playwright install` (or `pnpm exec`)—pick one approach and keep it maintainable.
-  - [ ] Ensure bootstrap path is idempotent enough for re-runs (document if `playwright install` is safe to repeat).
-- [ ] **README structure** (AC: 1–3)
-  - [ ] Sections: **Prerequisites**, **Quick start** / **Bootstrap**, **Development** (`dev`), **Testing** (unit + E2E), **Build** (client production build), **Project layout** (short: `client/`, `api/`, `e2e/`), **Troubleshooting**, **Out of scope (Epic 1)**.
-  - [ ] Link or reference **`_bmad-output/planning-artifacts/architecture.md`** only if helpful; primary audience is repo README at root.
-- [ ] **Scope callouts** (AC: 2)
-  - [ ] One short paragraph: integration tests and Compose/Docker land in **Epic 2** and **Epic 4** respectively; avoid documenting `docker compose` or `api/test/integration` workflows here.
-- [ ] **Troubleshooting** (AC: 3)
-  - [ ] Wrong Node: how to check (`node -v`), requirement ≥ 20, link to nvm/fnm optional.
-  - [ ] Playwright: `npx playwright install` (or workspace equivalent) and note CI installs browsers separately.
-  - [ ] Env: which files to copy and typical placeholder keys (**`VITE_*`**, **`PORT`**, **`DATABASE_PATH`**, **`CORS_ORIGIN`** per Architecture).
+- [x] **Audit actual scripts** (AC: 1)
+  - [x] Read root **`package.json`** (from Story 1.3) and **`client/`**, **`api/`**, **`e2e/`** package scripts; README commands must match **real** script names and working directory (root vs package).
+  - [x] Document **exact** sequence: clone → install (root and/or workspaces per repo) → copy **`.env.example`** → `playwright install` (root or `e2e/` per config).
+- [x] **Bootstrap automation** (AC: 1)
+  - [x] Add **`bootstrap`** or **`setup`** script at root **or** document a **single copy-paste block** that performs install + env copy + `npx playwright install` (or `pnpm exec`)—pick one approach and keep it maintainable.
+  - [x] Ensure bootstrap path is idempotent enough for re-runs (document if `playwright install` is safe to repeat).
+- [x] **README structure** (AC: 1–3)
+  - [x] Sections: **Prerequisites**, **Quick start** / **Bootstrap**, **Development** (`dev`), **Testing** (unit + E2E), **Build** (client production build), **Project layout** (short: `client/`, `api/`, `e2e/`), **Troubleshooting**, **Out of scope (Epic 1)**.
+  - [x] Link or reference **`_bmad-output/planning-artifacts/architecture.md`** only if helpful; primary audience is repo README at root.
+- [x] **Scope callouts** (AC: 2)
+  - [x] One short paragraph: integration tests and Compose/Docker land in **Epic 2** and **Epic 4** respectively; avoid documenting `docker compose` or `api/test/integration` workflows here.
+- [x] **Troubleshooting** (AC: 3)
+  - [x] Wrong Node: how to check (`node -v`), requirement ≥ 20, link to nvm/fnm optional.
+  - [x] Playwright: `npx playwright install` (or workspace equivalent) and note CI installs browsers separately.
+  - [x] Env: which files to copy and typical placeholder keys (**`VITE_*`**, **`PORT`**, **`DATABASE_PATH`**, **`CORS_ORIGIN`** per Architecture).
 
 ## Dev Notes
 
@@ -81,15 +81,39 @@ Contributor-facing documentation only; no UI changes.
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Composer (Cursor agent) — Story 1.5 execution via `bmad-dev-story`.
 
 ### Debug Log References
 
+_(none)_
+
+### Implementation Plan
+
+- **AC1:** Root `npm run bootstrap` = `npm install` + `scripts/bootstrap.mjs` (`.env.example` → `client/.env` & `api/.env` if missing) + `npm exec --workspace=e2e -- playwright install`. README documents manual equivalent and all of `dev`, `test` / `test:unit`, `test:e2e`, `npm run build --workspace client`.
+- **AC2:** README **Out of scope (Epic 1)** — Docker/Compose → Epic 4; `api/test/integration/` → Epic 2; pointer to `epics.md`, no duplicate setup.
+- **AC3:** **Troubleshooting** table — Node ≥ 20, Playwright install / CI `--with-deps`, env files and keys, ports.
+
 ### Completion Notes List
+
+- ✅ `npm run test`, `npm run build --workspace client`, `npm run test:e2e` — all pass after changes.
+- ✅ `npm run lint --workspace client` and `api` — pass.
+- ✅ `npm run bootstrap` verified: creates env on first run, skips existing `.env` on re-run; `playwright install` repeatable.
 
 ### File List
 
-_(filled by dev agent on completion)_
+- `README.md`
+- `package.json`
+- `scripts/bootstrap.mjs`
+- `client/.env.example` (new)
+- `api/.env.example` (new)
+- root `.env.example` (removed; replaced by per-package examples)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/1-5-readme-and-fresh-clone-bootstrap.md`
+
+### Change Log
+
+- **2026-04-09:** Story 1.5 — contributor README, root `bootstrap` script, env copy helper (`scripts/bootstrap.mjs`), sprint status `1-5` → `review`.
+- **2026-04-09:** Code review — File List + README Windows note + `bootstrap.mjs` copy error handling; story `1-5` → `done`.
 
 ---
 
@@ -101,5 +125,11 @@ Agents must follow **`_bmad-output/project-context.md`** for stack rules (Node, 
 
 **Story completion status**
 
-- **Status:** ready-for-dev  
-- **Note:** Ultimate context engine analysis completed — comprehensive developer guide created.
+- **Status:** done  
+- **Note:** README + `npm run bootstrap` aligned with workspace scripts; AC1–3 satisfied; code-review patches applied (2026-04-09).
+
+### Review Findings
+
+- [x] [Review][Patch] Dev Agent Record File List incomplete — add `client/.env.example`, `api/.env.example`, and note removal of root `.env.example` so the record matches the diff. *(fixed)*
+- [x] [Review][Patch] README Windows bootstrap note — clarify that `node scripts/bootstrap.mjs` only copies env files; full fresh-clone path including Playwright is `npm run bootstrap` (or run the workspace `playwright install` step separately). *(fixed)*
+- [x] [Review][Patch] `scripts/bootstrap.mjs` — wrap `copyFileSync` in try/catch (or equivalent) so EACCES/ENOSPC failures exit with a short message instead of a raw stack trace. *(fixed)*

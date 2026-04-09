@@ -145,6 +145,10 @@ None.
 - `README.md`
 - `.github/workflows/ci.yml`
 
+### Review Findings
+
+- [ ] [Review][Patch] README E2E: add a sentence for Linux/WSL contributors to use `npm exec playwright install --with-deps` (or link Playwright install docs) so local installs match CI system-deps expectations — AC #3 documentation polish [README.md]
+
 ## Change Log
 
 - 2026-04-09: Story 1.4 — Playwright `e2e/` workspace, minimal smoke spec, root `test:e2e`, README E2E docs, GitHub Actions Playwright job.

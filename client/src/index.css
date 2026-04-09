@@ -15,8 +15,9 @@
  * 1) Body copy: text-fg-primary on bg-surface-page — target ≥ 4.5:1 for normal text (≥ 3:1 for large text).
  * 2) Primary button: text-on-accent on bg-accent-primary — label must meet ≥ 4.5:1 against the teal fill.
  * 3) Error: text-fg-error on bg-surface-page (and on bg-surface-error if used) — ensure readable error copy.
- * 4) Focus: outline-focus-ring (focus-visible) vs adjacent bg-surface-page / bg-surface-panel — non-text focus
- *    indicator should be perceptible (≥ 3:1 vs adjacent colors per UI component focus guidance).
+ * 4) Focus: filled primary button uses focus-visible ring — `ring-fg-primary` + `ring-offset-2` +
+ *    `ring-offset-accent-primary` so the indicator is visible on the teal fill (verify in DevTools :focus-visible).
+ *    `outline-focus-ring` remains for future controls on dark surfaces where a teal outline contrasts the page.
  */
 @theme {
   /* Surfaces — dark-first layered neutrals (panel ref. UX ~#1a1f2e) */

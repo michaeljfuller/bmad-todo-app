@@ -19,7 +19,7 @@ function App() {
         <div className="flex flex-col gap-3">
           <button
             type="button"
-            className="inline-flex w-fit rounded-md bg-accent-primary px-4 py-2 text-sm font-medium text-on-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
+            className="inline-flex w-fit rounded-md bg-accent-primary px-4 py-2 text-sm font-medium text-on-accent focus-visible:ring-2 focus-visible:ring-fg-primary focus-visible:ring-offset-2 focus-visible:ring-offset-accent-primary focus-visible:outline-none"
           >
             Primary action
           </button>

@@ -1,40 +1,114 @@
 # bmad-todo-app
 
-Monorepo layout: `client/` (Vite + React + TypeScript), `api/` (Fastify).
+Monorepo: **`client/`** (Vite + React + TypeScript), **`api/`** (Fastify), **`e2e/`** (Playwright). Root **`package.json`** uses **npm workspaces**.
 
-**Use Node.js 20 or newer** for all packages in this repository.
+For deeper technical boundaries, see [`_bmad-output/planning-artifacts/architecture.md`](_bmad-output/planning-artifacts/architecture.md).
 
-## Workspace scripts
+## Prerequisites
 
-- `npm run dev` (from repo root) starts client and API together.
-  - Client default dev URL: `http://localhost:5173`
-  - API default dev URL: `http://localhost:3000` (or `PORT` if set)
-- `npm run test` (from repo root) runs workspace unit tests with fail-fast behavior:
-  - client tests run first
-  - api tests run only if client tests pass
+- **Node.js ≥ 20** (see `engines` in root, `client/`, `api/`, and `e2e/` `package.json` files). Check with:
 
-You can still run package scripts independently from `client/` and `api/` (for example `npm run dev` or `npm run test` in either package directory).
+  ```bash
+  node -v
+  ```
 
-For SPA-to-API wiring in local development, use `VITE_API_BASE_URL` (explicit API URL), or switch to a Vite proxy later if preferred.
+- **npm** (this repo is wired for **npm workspaces** and a committed **`package-lock.json`**). You can use **pnpm** or **yarn** only if you translate install/workspace commands yourself; the documented path is **npm**.
 
-## E2E / Playwright
+## Quick start / Bootstrap
 
-The `e2e/` workspace holds **Playwright** harness tests. Story 1.4 adds a **minimal smoke** spec only (no running todo app, API, or Docker).
-
-**One-time browser binaries** (after `npm ci` or fresh clone):
+From the **repository root** after clone:
 
 ```bash
-npm exec playwright install
+npm run bootstrap
 ```
 
-From the repo root, run the E2E suite:
+This **idempotently**:
+
+1. Runs **`npm install`** at the root (safe to repeat; refreshes workspace links).
+2. Copies **[`client/.env.example`](client/.env.example)** → **`client/.env`** and **[`api/.env.example`](api/.env.example)** → **`api/.env`** **only if those files do not exist** (re-runs will not overwrite your local env).
+3. Runs **`playwright install`** for the **`e2e`** workspace via **`npm exec --workspace=e2e -- playwright install`** (safe to repeat; refreshes browser binaries).
+
+**Manual equivalent** (if you prefer not to use the script):
+
+```bash
+npm install
+cp client/.env.example client/.env
+cp api/.env.example api/.env
+npm exec --workspace=e2e -- playwright install
+```
+
+On Windows without `cp`, copy each package’s **`.env.example`** next to **`.env`** in the same folder, or run `node scripts/bootstrap.mjs` after `npm install`.
+
+## Development
+
+Start **client and API together** from the repo root:
+
+```bash
+npm run dev
+```
+
+- **Client (Vite):** default **http://localhost:5173**
+- **API (Fastify):** default **http://localhost:3000** (override with **`PORT`** in **`api/.env`**)
+
+There is **no Vite dev-server proxy** in the current scaffold; point the SPA at the API with **`VITE_API_BASE_URL`** in **`client/.env`** (see [`client/.env.example`](client/.env.example)).
+
+## Testing
+
+**Unit tests** (client Vitest + API Node test runner), from repo root:
+
+```bash
+npm run test
+# same as:
+npm run test:unit
+```
+
+Workspace equivalents: `npm run test --workspace client`, `npm run test --workspace api`.
+
+**E2E (Playwright)**, from repo root (requires browsers — run **`npm run bootstrap`** once or install manually):
 
 ```bash
 npm run test:e2e
 ```
 
-Full **user journeys** (create, complete, delete, errors, etc.) are planned for **Epic 3**; this folder is the scaffold so CI can prove the runner works first.
+CI installs browsers with **`npm exec --workspace=e2e -- playwright install --with-deps`** (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)); locally, **`playwright install`** is usually enough.
 
-## Environment variables
+Epic 1 E2E is a **minimal smoke** scaffold only. Full product journeys are planned for **Epic 3**.
 
-Root [`.env.example`](.env.example) lists placeholders for both packages. **Vite loads env files from `client/`** and the **API loads them from `api/`**, so copy the relevant lines into `client/.env` and `api/.env` when you run package-level dev servers; keep values in sync with the root file when using `npm run dev` from the repo root.
+## Build
+
+**Client production build** (from repo root):
+
+```bash
+npm run build --workspace client
+```
+
+## Project layout
+
+| Path        | Role                                      |
+| ----------- | ----------------------------------------- |
+| `client/`   | Vite + React SPA, Vitest; `.env.example` for `VITE_*` |
+| `api/`      | Fastify API (fastify-cli); `.env.example` for server env |
+| `e2e/`      | Playwright config and specs               |
+| `scripts/`  | Root automation (e.g. `bootstrap.mjs`)    |
+
+## Troubleshooting
+
+| Issue | What to do |
+| ----- | ---------- |
+| **Wrong Node version** | Need **≥ 20**. Use [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to install/switch, then reinstall deps. |
+| **Playwright / browser errors** | From root: `npm exec --workspace=e2e -- playwright install`. On Linux CI-style hosts, try `playwright install --with-deps` (see workflow above). Re-running install is safe. |
+| **Missing `.env` / API or client misconfigured** | Ensure **`client/.env`** and **`api/.env`** exist (run **`npm run bootstrap`** or copy from [`client/.env.example`](client/.env.example) and [`api/.env.example`](api/.env.example)). Client: **`VITE_API_BASE_URL`**. API: **`PORT`**, **`DATABASE_PATH`**, **`CORS_ORIGIN`**, **`LOG_LEVEL`**, **`NODE_ENV`**. |
+| **Port already in use** | Change **`PORT`** in **`api/.env`** and align **`VITE_API_BASE_URL`** in **`client/.env`**, or stop the process using **5173** / **3000**. |
+
+## Out of scope (Epic 1)
+
+The following are **not** part of closing **Epic 1** in this repository; they are planned in later epics and will get their own docs/workflows:
+
+- **Docker**, multi-stage images, and **Docker Compose** stacks → **Epic 4** (see `_bmad-output/planning-artifacts/epics.md`).
+- **API HTTP integration tests** under **`api/test/integration/`** (real HTTP against an isolated DB) → **Epic 2** and related stories.
+
+Do not expect README steps for **`docker compose`** or **`api/test/integration/`** until those epics land.
+
+## CI
+
+Continuous integration runs from [`.github/workflows/`](.github/workflows/) (currently **E2E** with **`npm ci`**, Playwright browser install, and **`npm run test:e2e`**). Reproduce locally with the **Bootstrap** and **Testing** sections above.

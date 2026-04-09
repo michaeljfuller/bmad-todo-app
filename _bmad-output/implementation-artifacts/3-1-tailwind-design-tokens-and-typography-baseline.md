@@ -1,6 +1,6 @@
 # Story 3.1: Tailwind design tokens and typography baseline
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -29,19 +29,19 @@ so that **the app feels professional and easy to scan** (**UX-DR1**, **UX-DR12**
 
 ## Tasks / Subtasks
 
-- [ ] **Install Tailwind for Vite** (AC: #1)
-  - [ ] Add packages per current Tailwind docs for Vite (e.g. **`tailwindcss`** + **`@tailwindcss/vite`** for Tailwind v4, or the v3 **PostCSS** path if the team standardizes on v3—**lockfile** is source of truth after install).
-  - [ ] Register the Vite plugin (or PostCSS pipeline) in **`client/vite.config.ts`**; ensure **`npm run build`** and **`npm run dev`** still work.
-- [ ] **Token layer** (AC: #2, #3, #4)
-  - [ ] Define semantic colors and typography in **`tailwind.config.*`** and/or **`src/index.css`** (`@import "tailwindcss"` / `@theme`) per chosen Tailwind major version; **names** should be **semantic** (e.g. `surface-page`, `text-primary`, `accent-primary`, `text-completed`, `text-disabled`, `surface-error` or consistent `bg-*` / `text-*` mapping—pick one naming scheme and document it in Dev Notes).
-  - [ ] Apply **dark-first** defaults: the shipped **default appearance** should read as **professional dark** (per UX), not light-first with optional dark mode—align with **UX-DR** “default to dark UI.”
-  - [ ] Add **WCAG-oriented notes** for the pairs listed in AC #4.
-- [ ] **Root styles + app shell placeholder** (AC: #1–#3)
-  - [ ] Wire **`main.tsx`** imports so global styles load once; remove or slim **legacy** **`App.css`** / **`index.css`** starter rules that conflict with the new baseline (keep **`#root` / `body` margin** behavior sensible for the todo app).
-  - [ ] Replace the marketing-style starter **`App`** with a **minimal** placeholder that demonstrates **semantic surfaces + typography** (enough for Story 3.2+ to replace with real todo UI—**no** TanStack Query in this story).
-- [ ] **Tests** (AC: #5)
-  - [ ] Add **`*.test.tsx`** co-located with the placeholder component (or next to **`App`**) asserting a **token-based** background/text class renders (use **`toHaveClass`** or role + computed style as appropriate—avoid testing implementation details unrelated to tokens).
-  - [ ] Update **`App.test.tsx`** if the default headline/copy changes so **`npm test`** in **`client/`** stays green.
+- [x] **Install Tailwind for Vite** (AC: #1)
+  - [x] Add packages per current Tailwind docs for Vite (e.g. **`tailwindcss`** + **`@tailwindcss/vite`** for Tailwind v4, or the v3 **PostCSS** path if the team standardizes on v3—**lockfile** is source of truth after install).
+  - [x] Register the Vite plugin (or PostCSS pipeline) in **`client/vite.config.ts`**; ensure **`npm run build`** and **`npm run dev`** still work.
+- [x] **Token layer** (AC: #2, #3, #4)
+  - [x] Define semantic colors and typography in **`tailwind.config.*`** and/or **`src/index.css`** (`@import "tailwindcss"` / `@theme`) per chosen Tailwind major version; **names** should be **semantic** (e.g. `surface-page`, `text-primary`, `accent-primary`, `text-completed`, `text-disabled`, `surface-error` or consistent `bg-*` / `text-*` mapping—pick one naming scheme and document it in Dev Notes).
+  - [x] Apply **dark-first** defaults: the shipped **default appearance** should read as **professional dark** (per UX), not light-first with optional dark mode—align with **UX-DR** “default to dark UI.”
+  - [x] Add **WCAG-oriented notes** for the pairs listed in AC #4.
+- [x] **Root styles + app shell placeholder** (AC: #1–#3)
+  - [x] Wire **`main.tsx`** imports so global styles load once; remove or slim **legacy** **`App.css`** / **`index.css`** starter rules that conflict with the new baseline (keep **`#root` / `body` margin** behavior sensible for the todo app).
+  - [x] Replace the marketing-style starter **`App`** with a **minimal** placeholder that demonstrates **semantic surfaces + typography** (enough for Story 3.2+ to replace with real todo UI—**no** TanStack Query in this story).
+- [x] **Tests** (AC: #5)
+  - [x] Add **`*.test.tsx`** co-located with the placeholder component (or next to **`App`**) asserting a **token-based** background/text class renders (use **`toHaveClass`** or role + computed style as appropriate—avoid testing implementation details unrelated to tokens).
+  - [x] Update **`App.test.tsx`** if the default headline/copy changes so **`npm test`** in **`client/`** stays green.
 
 ## Dev Notes
 
@@ -104,14 +104,48 @@ so that **the app feels professional and easy to scan** (**UX-DR1**, **UX-DR12**
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+GPT-5.2 (Cursor agent)
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- Tailwind **v4.2** via **`@tailwindcss/vite`**; semantic tokens in **`client/src/index.css`** `@theme` + WCAG pair comments (AC #4).
+- Naming: **`surface-*`**, **`fg-*`**, **`accent-primary`**, **`on-accent`**, **`surface-error`**, **`fg-error`**, **`focus-ring`** → utilities `bg-*`, `text-*`, `outline-*`.
+- Removed marketing scaffold **`App.css`**; **`DesignSurfaceSample`** + minimal **`App`** use token classes only (no TanStack Query).
+- Tests: **`DesignSurfaceSample.test.tsx`** (`toHaveClass` on `bg-surface-panel`, `text-fg-secondary`); **`App.test.tsx`** updated for “Todo app” heading.
+- Verified: **`npm test`** (root: client + api), **`npm run build`** + **`npm run lint`** in **`client/`**.
+
 ### File List
+
+- `client/package.json`
+- `package-lock.json` (workspace root; client deps hoisted here)
+- `client/index.html`
+- `client/vite.config.ts`
+- `client/src/index.css`
+- `client/src/main.tsx` (unchanged import path; global CSS via `./index.css`)
+- `client/src/App.tsx`
+- `client/src/App.test.tsx`
+- `client/src/components/DesignSurfaceSample.tsx`
+- `client/src/components/DesignSurfaceSample.test.tsx`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/3-1-tailwind-design-tokens-and-typography-baseline.md`
+
+### Change Log
+
+- 2026-04-09: Story 3.1 — Tailwind v4 + Vite plugin, semantic `@theme` tokens, dark-first baseline, placeholder UI, Vitest token pipeline test; sprint status `in-progress` → `review`.
+- 2026-04-09: Code review batch patches — `App.tsx` a11y, `index.html` title, test cleanup, remove orphaned SVGs, File List lockfile note; status `review` → `done`.
+
+### Review Findings
+
+- [x] [Review][Patch] Static error preview uses `role="status"` on non-updating copy — remove live-region semantics or use a non-live pattern [`client/src/App.tsx`] — fixed (removed `role="status"`)
+- [x] [Review][Patch] Orphaned starter assets — delete or re-home unreferenced `react.svg` / `vite.svg` under `client/src/assets/` — fixed (removed `react.svg`, `vite.svg`, and unused `hero.png`; removed empty `client/src/assets/`)
+- [x] [Review][Patch] Redundant assertion — drop `expect(container.firstChild).toBeTruthy()` in `DesignSurfaceSample.test.tsx` — fixed
+- [x] [Review][Patch] Generic document title — align `client/index.html` `<title>` with Todo app baseline — fixed (`Todo app`)
+- [x] [Review][Patch] File List accuracy — lockfile for workspace deps is root `package-lock.json`; correct Dev Agent Record File List — fixed
+- [x] [Review][Defer] `--color-focus-ring` defined but sample button uses `ring-fg-primary` — deferred; comment reserves token for later controls [`client/src/index.css`, `client/src/App.tsx`] — deferred, pre-existing intent per Dev Notes
+- [x] [Review][Defer] Responsive base font size — prior scaffold reduced font on narrow viewports; new global `1rem` only — verify mobile readability in UX pass [`client/src/index.css`] — deferred, pre-existing tradeoff from simplification
 
 ---
 
-**Story completion status:** Ultimate context engine analysis completed — comprehensive developer guide created.
+**Story completion status:** Done — code review patches applied; deferred items tracked in `deferred-work.md`.

@@ -19,7 +19,8 @@ Created using Cursor's Auto mode throughout.
 
 ## MCP Server Usage  
 > Which MCP servers did you use? How did they help?  
-- Postman
+- Postman to validate the API
+- Chrome DevTools to run Lighthouse tests
 
 ## Test Generation  
 > How did AI assist in generating test cases? What did it miss?  
@@ -27,9 +28,10 @@ Created using Cursor's Auto mode throughout.
 
 ## Debugging with AI  
 > Document cases where AI helped debug issues.  
-
+- Fixed issues flagged by Lighthouse.
 
 ## Limitations Encountered  
 > What couldn't the AI do well? Where was human expertise critical?  
 - Sometimes didn't mark reviews as done after discussion, when I said I was happy with the outcome, unless explicitly stated.
 - It thought there was an error connecting to a new endpoint and suspected that Postman was trying to access an endpoint that wasn't ours, when it was just because it didn't use a hot or manual reload.
+- Despite adding some guidence in the context, it did need to be reminded of some tasks I wanted it to do after certain steps, like run some additional tests automatically.

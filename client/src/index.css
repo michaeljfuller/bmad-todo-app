@@ -1,111 +1,67 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import 'tailwindcss';
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/*
+ * Semantic token naming (Tailwind v4 @theme → utilities bg-*, text-*, outline-*):
+ * - surface-* : layered neutrals (page → panel → row)
+ * - fg-*      : text / foreground roles (primary, secondary, muted, completed, disabled, error)
+ * - accent-primary, on-accent : teal CTA fill + label on accent
+ * - surface-error + fg-error  : error surfaces / copy
+ * - focus-ring                : focus-visible outline color
+ *
+ * WCAG 2.1 AA intent — verify during implementation (browser DevTools “Contrast” / Accessibility pane,
+ * WebAIM contrast checker, or equivalent). Full formal audit can follow later.
+ *
+ * Pairs to check:
+ * 1) Body copy: text-fg-primary on bg-surface-page — target ≥ 4.5:1 for normal text (≥ 3:1 for large text).
+ * 2) Primary button: text-on-accent on bg-accent-primary — label must meet ≥ 4.5:1 against the teal fill.
+ * 3) Error: text-fg-error on bg-surface-page (and on bg-surface-error if used) — ensure readable error copy.
+ * 4) Focus: filled primary button uses focus-visible ring — `ring-fg-primary` + `ring-offset-2` +
+ *    `ring-offset-accent-primary` so the indicator is visible on the teal fill (verify in DevTools :focus-visible).
+ *    `outline-focus-ring` remains for future controls on dark surfaces where a teal outline contrasts the page.
+ */
+@theme {
+  /* Surfaces — dark-first layered neutrals (panel ref. UX ~#1a1f2e) */
+  --color-surface-page: #0f1117;
+  --color-surface-panel: #1a1f2e;
+  --color-surface-row: #232a3d;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Text */
+  --color-fg-primary: #f3f4f6;
+  --color-fg-secondary: #9ca3af;
+  /* Muted/disabled: tuned for ≥4.5:1 on surface-panel (#1a1f2e); verified via Lighthouse color-contrast (Chrome DevTools MCP). */
+  --color-fg-muted: #8b95a8;
+  /* Completed todo copy vs disabled control — separate tokens (UX-DR9 precursor) */
+  --color-fg-completed: #6ee7b7;
+  --color-fg-disabled: #808a9e;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+  /* Accent — UX teal reference #2dd4bf */
+  --color-accent-primary: #2dd4bf;
+  --color-on-accent: #0c1222;
+
+  /* Semantic UI */
+  --color-surface-error: #3f1d1d;
+  --color-fg-error: #fca5a5;
+
+  --color-focus-ring: #2dd4bf;
+
+  /* Typography — system UI stack (UX spec) */
+  --font-sans: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+@layer base {
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-surface-page);
+    color: var(--color-fg-primary);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  #root {
+    min-height: 100dvh;
   }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
 }

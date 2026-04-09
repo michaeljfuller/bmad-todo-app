@@ -1,12 +1,12 @@
-import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 import App from './App'
 
 describe('App', () => {
-  it('renders the main headline', () => {
+  it('renders the app title', () => {
     render(<App />)
     expect(
-      screen.getByRole('heading', { name: /get started/i }),
+      screen.getByRole('heading', { name: /todo app/i }),
     ).toBeInTheDocument()
   })
 })

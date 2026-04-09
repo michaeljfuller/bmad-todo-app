@@ -12,6 +12,7 @@
   },
   "scripts": {
     "test": "node --test --test-concurrency=1 test/**/*.test.js",
+    "test:integration": "NODE_ENV=test node --test --test-concurrency=1 test/integration/**/*.test.js",
     "start": "fastify start -o -l info app.js",
     "dev": "fastify start -o -w -l info -P app.js",
     "lint": "eslint .",
@@ -31,7 +32,10 @@
   "homepage": "https://github.com/michaeljfuller/bmad-todo-app#readme",
   "dependencies": {
     "@fastify/autoload": "^6.0.0",
+    "@fastify/cors": "^11.2.0",
     "@fastify/sensible": "^6.0.0",
+    "@fastify/swagger": "^9.7.0",
+    "@fastify/swagger-ui": "^5.2.5",
     "better-sqlite3": "^12.8.0",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.45.2",

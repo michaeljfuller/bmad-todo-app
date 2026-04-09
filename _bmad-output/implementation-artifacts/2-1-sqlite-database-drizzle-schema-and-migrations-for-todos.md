@@ -1,6 +1,6 @@
 # Story 2.1: SQLite database, Drizzle schema, and migrations for `todos`
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -19,23 +19,23 @@ so that **todo data survives process restarts** per **NFR-R1** and matches the A
 
 ## Tasks / Subtasks
 
-- [ ] **Dependencies** (AC: 1–3)
-  - [ ] Add **`drizzle-orm`**, **`better-sqlite3`** to **`api/`** runtime dependencies; add **`drizzle-kit`** as devDependency (versions pinned in **`package-lock.json`** after install).
-  - [ ] Reconcile **`better-sqlite3`** native build with **Node ≥ 20** and CI (document if extra CI steps are needed; Epic 2.4 may extend CI—this story should at least keep **`npm test`** / **`lint`** green).
-- [ ] **Config** (AC: 1)
-  - [ ] Add **`drizzle.config.*`** at **`api/`** root (Architecture shows **`drizzle.config.ts`**; **`drizzle.config.js`** is acceptable if the API remains JS-only—pick one and align **`drizzle-kit`** CLI).
-  - [ ] Point config at **`DATABASE_PATH`** (env or resolved path) and at schema entry (e.g. **`./db/schema.js`**).
-- [ ] **Schema module** (AC: 1–3)
-  - [ ] Create **`api/db/`** with **`schema`** defining **`todos`** table: map TS/JS field names to **`snake_case`** columns using Drizzle **`columnName`** (or equivalent) where application names are camelCase.
-  - [ ] **`id`**: stable primary key (e.g. **integer autoincrement** or **text UUID**—choose one, document briefly; must be stable for REST **`/todos/:id`** in **2.2**).
-  - [ ] **`text`**: store todo body; type and length limits for HTTP validation land in **2.2**—schema should allow reasonable storage (e.g. **text** column).
-  - [ ] **`completed`**: boolean/integer consistent with Drizzle + SQLite (document mapping).
-  - [ ] **`created_at`**, **`updated_at`**: store as SQLite **integer (unix ms)** or **text (ISO)**—**must** serialize to **ISO 8601 UTC strings in JSON** at the API boundary in **2.2**; pick one storage representation and document it for the next story.
-- [ ] **Migrations** (AC: 1)
-  - [ ] Add **`api/migrations/`** (or Drizzle default) with **versioned SQL** from **`drizzle-kit generate`** (preferred for reproducible deploys per Architecture).
-  - [ ] Document in **`api/README.md`** (short): how to create DB file parent dir if needed, run migrate against **`DATABASE_PATH`**, and when **`drizzle-kit push`** is **not** acceptable (production / CI reproducibility).
-- [ ] **DB bootstrap helper (optional but recommended)** (AC: 1)
-  - [ ] Small **`api/db/index.js`** (or equivalent) that opens **`better-sqlite3`** using **`DATABASE_PATH`**, runs **`migrate`** (Drizzle migrator) once at startup **or** exposes a **`npm run db:migrate`** script—choose one pattern and document so **2.2** can import a single connection/migrate path.
+- [x] **Dependencies** (AC: 1–3)
+  - [x] Add **`drizzle-orm`**, **`better-sqlite3`** to **`api/`** runtime dependencies; add **`drizzle-kit`** as devDependency (versions pinned in **`package-lock.json`** after install).
+  - [x] Reconcile **`better-sqlite3`** native build with **Node ≥ 20** and CI (document if extra CI steps are needed; Epic 2.4 may extend CI—this story should at least keep **`npm test`** / **`lint`** green).
+- [x] **Config** (AC: 1)
+  - [x] Add **`drizzle.config.*`** at **`api/`** root (Architecture shows **`drizzle.config.ts`**; **`drizzle.config.js`** is acceptable if the API remains JS-only—pick one and align **`drizzle-kit`** CLI).
+  - [x] Point config at **`DATABASE_PATH`** (env or resolved path) and at schema entry (e.g. **`./db/schema.js`**).
+- [x] **Schema module** (AC: 1–3)
+  - [x] Create **`api/db/`** with **`schema`** defining **`todos`** table: map TS/JS field names to **`snake_case`** columns using Drizzle **`columnName`** (or equivalent) where application names are camelCase.
+  - [x] **`id`**: stable primary key (e.g. **integer autoincrement** or **text UUID**—choose one, document briefly; must be stable for REST **`/todos/:id`** in **2.2**).
+  - [x] **`text`**: store todo body; type and length limits for HTTP validation land in **2.2**—schema should allow reasonable storage (e.g. **text** column).
+  - [x] **`completed`**: boolean/integer consistent with Drizzle + SQLite (document mapping).
+  - [x] **`created_at`**, **`updated_at`**: store as SQLite **integer (unix ms)** or **text (ISO)**—**must** serialize to **ISO 8601 UTC strings in JSON** at the API boundary in **2.2**; pick one storage representation and document it for the next story.
+- [x] **Migrations** (AC: 1)
+  - [x] Add **`api/migrations/`** (or Drizzle default) with **versioned SQL** from **`drizzle-kit generate`** (preferred for reproducible deploys per Architecture).
+  - [x] Document in **`api/README.md`** (short): how to create DB file parent dir if needed, run migrate against **`DATABASE_PATH`**, and when **`drizzle-kit push`** is **not** acceptable (production / CI reproducibility).
+- [x] **DB bootstrap helper (optional but recommended)** (AC: 1)
+  - [x] Small **`api/db/index.js`** (or equivalent) that opens **`better-sqlite3`** using **`DATABASE_PATH`**, runs **`migrate`** (Drizzle migrator) once at startup **or** exposes a **`npm run db:migrate`** script—choose one pattern and document so **2.2** can import a single connection/migrate path.
 
 ## Dev Notes
 
@@ -98,14 +98,50 @@ Match **Fastify** scaffold conventions: **kebab-case** route/plugin files elsewh
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Composer (Cursor agent)
 
 ### Debug Log References
 
+- Drizzle `migrate()` requires a **Drizzle** DB instance (`drizzle(sqlite)`), not raw `better-sqlite3` — fixed in `applyMigrations`.
+
 ### Completion Notes List
+
+- **AC1–4:** `api/db/schema.js`, `drizzle.config.js`, `migrations/0000_todos_initial.sql` + meta; `npm run db:generate` / `db:migrate`; `api/README.md` documents `push` vs migrate and `better-sqlite3` CI note.
+- **Timestamps:** INTEGER Unix ms + SQL `(unixepoch() * 1000)` defaults; `updated_at` matches `created_at` on INSERT (test asserts).
+- **NFR-SC1:** Documented in schema JSDoc (nullable `user_id` / tenant + index later; single PK `id`).
+- **Tests:** `test/db/migrations.test.js` — temp DB, `applyMigrations`, `PRAGMA table_info`, insert row.
+- **No** HTTP todo routes, `/health`, or `/ready`.
+- **Post-review:** `resolveDatabasePath` relative to `api/`; `migrate.js` + `dotenv` for optional `api/.env`.
 
 ### File List
 
+- `api/package.json` (incl. `dotenv` for `db:migrate` `.env` load)
+- `package-lock.json` (root workspace lockfile)
+- `api/drizzle.config.js`
+- `api/db/schema.js`
+- `api/db/index.js`
+- `api/scripts/migrate.js`
+- `api/migrations/0000_todos_initial.sql`
+- `api/migrations/meta/_journal.json`
+- `api/migrations/meta/0000_snapshot.json`
+- `api/test/db/migrations.test.js`
+- `api/README.md`
+- `api/eslint.config.mjs`
+- `api/.gitignore`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/2-1-sqlite-database-drizzle-schema-and-migrations-for-todos.md`
+
+### Review Findings
+
+- [x] [Review][Patch] Align relative `DATABASE_PATH` resolution with `drizzle.config.js` — [api/db/index.js:15] — fixed (resolve against `api/` root).
+- [x] [Review][Patch] Fix README vs migrate script: `.env` is not loaded by `node scripts/migrate.js` — [api/README.md:17] [api/scripts/migrate.js] — fixed (`dotenv` + conditional load in `migrate.js`; README updated).
+- [x] [Review][Defer] Root CI does not run `npm test` (api workspace / migration test); E2E-only job — deferred, pre-existing [.github/workflows/ci.yml]
+
+## Change Log
+
+- **2026-04-09:** Story 2.1 — Drizzle + SQLite schema, versioned migration, `db:migrate` / `db:generate`, `db/index.js`, README, migration smoke test; sprint status → review.
+- **2026-04-09:** Code review — `resolveDatabasePath` uses `api/` root for relative paths; `migrate.js` loads optional `api/.env` via `dotenv`; README aligned; story → done.
+
 ---
 
-**Story completion status:** Ultimate context engine analysis completed — comprehensive developer guide created.
+**Story completion status:** Done — review patches applied; `npm test` (root) and `npm run lint` (api) pass.

@@ -14,7 +14,9 @@
     "test": "node --test test/**/*.test.js",
     "start": "fastify start -l info app.js",
     "dev": "fastify start -w -l info -P app.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/migrate.js"
   },
   "repository": {
     "type": "git",
@@ -30,12 +32,16 @@
   "dependencies": {
     "@fastify/autoload": "^6.0.0",
     "@fastify/sensible": "^6.0.0",
+    "better-sqlite3": "^12.8.0",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.45.2",
     "fastify": "^5.0.0",
     "fastify-cli": "^7.4.1",
     "fastify-plugin": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^10.2.0",
     "globals": "^17.4.0"
   }

@@ -1,0 +1,20 @@
+{
+  "name": "bmad-todo-app",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "client",
+    "api"
+  ],
+  "scripts": {
+    "dev": "concurrently --names client,api --prefix \"[{name}]\" \"npm run dev --workspace client\" \"npm run dev --workspace api\"",
+    "test": "npm run test --workspace client && npm run test --workspace api",
+    "test:unit": "npm run test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

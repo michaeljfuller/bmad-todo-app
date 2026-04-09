@@ -4,16 +4,28 @@
 
 Bootstrapped with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli) / create-fastify (`plugins/`, `routes/`, `@fastify/autoload`).
 
-## REST (todos) — interim
+## REST (todos)
 
-The API uses a **single locked prefix** **`/todos`** (see `routes/todos/index.js` and `@fastify/autoload`).
+The API uses a **single locked prefix** **`/todos`** (see `routes/todos/index.js` and `@fastify/autoload`). Non-2xx JSON errors use **`{ "error": { "code", "message", "details?" } }`**.
 
 | Method | Path | Notes |
 | ------ | ---- | ----- |
-| **GET** | `/todos` | Response `{ "todos": [ { id, text, completed, createdAt, updatedAt } ] }` — camelCase fields, dates as **ISO 8601 UTC** strings; ordered by `createdAt` ascending. |
-| **POST** | `/todos` | Body `{ "text": string }` — length **1..10000**; **201** with the created todo; **400** with `{ "error": { "code", "message", "details?" } }` on validation failure. |
+| **GET** | `/todos` | **200** `{ "todos": [ … ] }` — camelCase, **ISO 8601 UTC** dates; ordered by `createdAt` ascending. |
+| **POST** | `/todos` | Body `{ "text": string }` (**1..10000**); **201** full todo; **400** validation envelope. |
+| **PATCH** | `/todos/:id` | Body `{ "completed": boolean }` only; **200** full todo; **400** / **404** (`TODO_NOT_FOUND`, including invalid id shape). |
+| **DELETE** | `/todos/:id` | **204** empty body; **404** same as PATCH. |
 
-OpenAPI and CORS are finalized in **Story 2.4**; **PATCH** / **DELETE** land in **Story 2.3**.
+### OpenAPI (contract)
+
+- **`NODE_ENV=production`:** OpenAPI routes are **disabled** (no spec/UI surface).
+- **Otherwise:** Machine-readable spec at **`GET /documentation/json`** (used in CI contract smoke tests).
+- **`NODE_ENV=development`:** **Swagger UI** at **`/documentation`** (same JSON under `/documentation/json` via `@fastify/swagger-ui`).
+
+The generated document may list collection paths with a **trailing slash** (e.g. `/todos/`); HTTP clients should use the prefix above. Schemas for todos and the error envelope are driven from route JSON Schema (`schemas/todos-contract.js`).
+
+### CORS
+
+When **`CORS_ORIGIN`** is set (see `.env.example`, e.g. Vite `http://localhost:5173`), **`@fastify/cors`** allows that **single origin**. If unset, the CORS plugin is not registered (no `*` default).
 
 ## Persistence (SQLite + Drizzle)
 
@@ -61,6 +73,7 @@ Installs use **prebuilt binaries** when available for your platform. If install 
 | `npm run dev`     | Dev server (watch).                              |
 | `npm start`       | Production mode.                                 |
 | `npm run test`    | Node test runner (`test/**/*.test.js`). Uses **`--test-concurrency=1`** so suites that set `DATABASE_PATH` do not race across files. |
+| `npm run test:integration` | **`NODE_ENV=test`** — runs `test/integration/**/*.test.js` only (CI uses this). |
 | `npm run lint`    | ESLint.                                          |
 | `npm run db:generate` | Emit SQL from `db/schema.js` (`drizzle-kit`). |
 | `npm run db:migrate`  | Apply migrations to the DB at `DATABASE_PATH`.   |

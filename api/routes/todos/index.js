@@ -4,31 +4,16 @@
  * Todo REST API (list, create, patch completion, delete).
  *
  * **Prefix:** `/todos` (from `@fastify/autoload` — directory `routes/todos/`).
- * OpenAPI and CORS hardening are Story 2.4.
  */
 
 const { asc, eq } = require('drizzle-orm')
 const { todos } = require('../../db/schema')
-
-const MAX_TEXT_LENGTH = 10_000
-
-const postBodySchema = {
-  type: 'object',
-  required: ['text'],
-  additionalProperties: false,
-  properties: {
-    text: { type: 'string', minLength: 1, maxLength: MAX_TEXT_LENGTH },
-  },
-}
-
-const patchBodySchema = {
-  type: 'object',
-  required: ['completed'],
-  additionalProperties: false,
-  properties: {
-    completed: { type: 'boolean' },
-  },
-}
+const {
+  createPostSchema,
+  deleteByIdSchema,
+  listGetSchema,
+  patchByIdSchema,
+} = require('../../schemas/todos-contract')
 
 function todoToJson(row) {
   return {
@@ -58,7 +43,7 @@ function todoNotFoundError() {
 }
 
 module.exports = async function todosRoutes(fastify, _opts) {
-  fastify.get('/', async function listTodos() {
+  fastify.get('/', { schema: listGetSchema }, async function listTodos() {
     const rows = await fastify.db
       .select()
       .from(todos)
@@ -66,36 +51,24 @@ module.exports = async function todosRoutes(fastify, _opts) {
     return { todos: rows.map(todoToJson) }
   })
 
-  fastify.post(
-    '/',
-    {
-      schema: {
-        body: postBodySchema,
-      },
-    },
-    async function createTodo(request, reply) {
-      const { text } = request.body
-      const inserted = await fastify.db
-        .insert(todos)
-        .values({ text, completed: false })
-        .returning()
+  fastify.post('/', { schema: createPostSchema }, async function createTodo(request, reply) {
+    const { text } = request.body
+    const inserted = await fastify.db
+      .insert(todos)
+      .values({ text, completed: false })
+      .returning()
 
-      const row = inserted[0]
-      request.log.info(
-        { reqId: request.id, todoId: row.id, route: '/todos' },
-        'todo created'
-      )
-      return reply.code(201).send(todoToJson(row))
-    }
-  )
+    const row = inserted[0]
+    request.log.info(
+      { reqId: request.id, todoId: row.id, route: '/todos' },
+      'todo created'
+    )
+    return reply.code(201).send(todoToJson(row))
+  })
 
   fastify.patch(
     '/:id',
-    {
-      schema: {
-        body: patchBodySchema,
-      },
-    },
+    { schema: patchByIdSchema },
     async function patchTodoCompletion(request, reply) {
       const id = parseTodoId(request.params.id)
       if (id === null) {
@@ -124,7 +97,7 @@ module.exports = async function todosRoutes(fastify, _opts) {
     }
   )
 
-  fastify.delete('/:id', async function deleteTodo(request, reply) {
+  fastify.delete('/:id', { schema: deleteByIdSchema }, async function deleteTodo(request, reply) {
     const id = parseTodoId(request.params.id)
     if (id === null) {
       throw todoNotFoundError()

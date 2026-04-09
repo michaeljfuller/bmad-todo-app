@@ -75,6 +75,42 @@
       ]
     },
     {
+      "name": "Contract",
+      "description": "OpenAPI JSON — **not** served when `NODE_ENV=production`. With `npm run dev` and `NODE_ENV=development` in `api/.env`, use **`GET /documentation/json`** (or open **`/documentation`** in a browser).",
+      "item": [
+        {
+          "name": "GET OpenAPI JSON",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('payload is OpenAPI with paths', function () {",
+                  "  const doc = pm.response.json();",
+                  "  pm.expect(doc).to.have.property('openapi');",
+                  "  pm.expect(doc).to.have.property('paths');",
+                  "  const p = doc.paths['/todos'] || doc.paths['/todos/'];",
+                  "  pm.expect(p).to.be.an('object');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/documentation/json",
+            "description": "Generated OpenAPI 3.x document for PR/contract review."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Todos",
       "description": "Run requests **in order**. **Create todo** sets collection variable `todoId` for PATCH and Delete.",
       "item": [

@@ -16,7 +16,7 @@ rule_count: 48
 optimized_for_llm: true
 discovery_sources:
   - _bmad-output/planning-artifacts/architecture.md
-codebase_status: planning_only
+codebase_status: scaffolded
 ---
 
 # Project Context for AI Agents
@@ -27,14 +27,14 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 ## Technology Stack & Versions
 
-**Target stack** (align with `_bmad-output/planning-artifacts/architecture.md`; **pin exact versions in each `package.json`** when scaffolding—this repo had no app packages at context generation time):
+**Target stack** (align with `_bmad-output/planning-artifacts/architecture.md`; versions below match `client/package.json` / `api/package.json` + lockfiles):
 
 | Layer | Technology | Notes |
 |--------|------------|--------|
-| Runtime | **Node ≥ 20** | Required before `npm create` / generators. |
-| Client | **Vite** + **React** + **TypeScript** (`react-ts`) | SPA; no Next.js for v1 unless product changes. |
+| Runtime | **Node ≥ 20** | `engines` in `client/` and `api/`; root README. |
+| Client | **Vite 8** + **React 19** + **TypeScript** (`react-ts`) | SPA; no Next.js for v1 unless product changes. Vitest 4 + Testing Library; ESLint 9. |
 | Server state | **TanStack Query v5** (`@tanstack/react-query`) | All todo list/mutation state from the API—no parallel canonical copy. |
-| API | **Fastify** (`npm init fastify` / **@fastify/autoload**) | REST + JSON; OpenAPI from routes (**@fastify/swagger** in dev). |
+| API | **Fastify 5** + **fastify-cli** + **@fastify/autoload** | REST + JSON (Epic 2+); JS scaffold under `api/`; OpenAPI later. |
 | Persistence | **SQLite** + **`better-sqlite3`** | One DB file per deployment; path via env. |
 | ORM | **Drizzle** + **drizzle-kit** | Schema in TS; versioned SQL migrations (`generate` / documented `push` for local only). |
 | Validation | **Fastify JSON Schema** (and/or **Zod** at boundary) | Server authoritative; stable 400 responses. |

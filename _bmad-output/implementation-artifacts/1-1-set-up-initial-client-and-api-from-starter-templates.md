@@ -1,6 +1,6 @@
 # Story 1.1: Set up initial client and API from starter templates
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -18,18 +18,18 @@ so that **the repo matches the documented stack and every contributor gets the s
 
 ## Tasks / Subtasks
 
-- [ ] **Client scaffold** (AC: 1)
-  - [ ] From repo root: `npm create vite@latest client -- --template react-ts` (non-interactive flags if the tool prompts).
-  - [ ] `cd client && npm install`; confirm `npm run dev`, `npm run build`.
-  - [ ] Add **Vitest** (and React Testing Library if useful) so `npm run test` or `npm run test:unit` runs ≥1 passing sample test.
-  - [ ] Ensure **ESLint** runs via script (extend Vite/React defaults if present).
-- [ ] **API scaffold** (AC: 2)
-  - [ ] From repo root: `npm init fastify api` (accept defaults that produce `plugins/`, `routes/`, autoload).
-  - [ ] `cd api && npm install`; confirm `npm start` / dev script from generated `package.json`.
-  - [ ] Add minimal **unit** test setup (Node test runner, Vitest, or other—**one** choice) with ≥1 passing test.
-  - [ ] Ensure **ESLint** runs via script on `api/` (match whatever the generator provides or add minimal config).
-- [ ] **Node version visibility** (AC: 3)
-  - [ ] Document **Node ≥ 20** in README and/or `engines` in the relevant `package.json`(s).
+- [x] **Client scaffold** (AC: 1)
+  - [x] From repo root: `npm create vite@latest client -- --template react-ts` (non-interactive flags if the tool prompts).
+  - [x] `cd client && npm install`; confirm `npm run dev`, `npm run build`.
+  - [x] Add **Vitest** (and React Testing Library if useful) so `npm run test` or `npm run test:unit` runs ≥1 passing sample test.
+  - [x] Ensure **ESLint** runs via script (extend Vite/React defaults if present).
+- [x] **API scaffold** (AC: 2)
+  - [x] From repo root: `npm init fastify api` (accept defaults that produce `plugins/`, `routes/`, autoload).
+  - [x] `cd api && npm install`; confirm `npm start` / dev script from generated `package.json`.
+  - [x] Add minimal **unit** test setup (Node test runner, Vitest, or other—**one** choice) with ≥1 passing test.
+  - [x] Ensure **ESLint** runs via script on `api/` (match whatever the generator provides or add minimal config).
+- [x] **Node version visibility** (AC: 3)
+  - [x] Document **Node ≥ 20** in README and/or `engines` in the relevant `package.json`(s).
 
 ## Dev Notes
 
@@ -79,19 +79,32 @@ No UI product requirements in this story beyond a working Vite default page. **T
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Cursor agent (Amelia / dev-story workflow), 2026-04-09.
 
 ### Debug Log References
 
+- `npx create-fastify@latest` without a path initially wrote Fastify files to repo root; relocated into `api/` to match architecture (`client/`, `api/`).
+
 ### Completion Notes List
+
+- **AC1:** `client/` from `npm create vite@latest client -- --template react-ts`; `npm run build` → `client/dist/`; `npm run test` (Vitest) — `src/App.test.tsx` co-located with `App.tsx`; `npm run lint` (template ESLint).
+- **AC2:** `api/` from create-fastify (equivalent to `npm init fastify` scaffold): `app.js`, `plugins/`, `routes/`, `@fastify/autoload`; `npm test` (Node built-in `node:test`, 3 passing); `npm run lint` via `eslint.config.mjs` + `npm run lint`; `npm start` / `npm run dev` verified (HTTP 200 on `/`).
+- **AC3:** `engines.node` `>=20` in `client/package.json` and `api/package.json`; Node 20+ called out in root `README.md`, `client/README.md`, `api/README.md`.
+- **`_bmad-output/project-context.md`:** `codebase_status` → `scaffolded`; technology stack table updated with pinned stack summary.
 
 ### File List
 
-_(filled by dev agent on completion)_
+- `README.md` (root)
+- `client/` — full Vite react-ts scaffold plus: `package.json`, `package-lock.json`, `vite.config.ts`, `eslint.config.js`, `tsconfig*.json`, `index.html`, `src/*` (including `App.test.tsx`, `test-setup.ts`), `public/*`, `.gitignore`, `README.md`
+- `api/` — Fastify scaffold: `package.json`, `package-lock.json`, `app.js`, `eslint.config.mjs`, `.gitignore`, `README.md`, `plugins/*.js`, `routes/**/*.js`, `test/**/*.js`
+
+### Change Log
+
+- 2026-04-09: Story 1.1 — scaffolded `client/` (Vite + React + TS + Vitest + ESLint) and `api/` (Fastify + autoload + Node test + ESLint); Node ≥20 documented; relocated mistaken root Fastify files into `api/`; updated `project-context.md` stack status.
 
 ---
 
 **Story completion status**
 
-- **Status:** ready-for-dev  
-- **Note:** Ultimate context engine analysis completed — comprehensive developer guide created.
+- **Status:** review  
+- **Note:** Ready for code review; run full test/lint in `client/` and `api/` before merge.

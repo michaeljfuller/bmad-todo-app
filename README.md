@@ -70,9 +70,9 @@ Workspace equivalents: `npm run test --workspace client`, `npm run test --worksp
 npm run test:e2e
 ```
 
-CI installs browsers with **`npm exec --workspace=e2e -- playwright install --with-deps`** (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)); locally, **`playwright install`** is usually enough.
+Playwright starts **`npm run dev:e2e-stack`** (see [`scripts/e2e-dev-stack.sh`](scripts/e2e-dev-stack.sh)): it migrates SQLite, runs the **API** on **3000**, builds the **client** with **`VITE_API_BASE_URL=http://127.0.0.1:3000`**, then serves **`vite preview`** on **5199** (not 5173) so tests do not collide with **`npm run dev`**. **`CORS_ORIGIN`** for that stack defaults to **`http://127.0.0.1:5199`**. CI sets **`DATABASE_PATH`** to a temp file for the E2E job (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
 
-Epic 1 E2E is a **minimal smoke** scaffold only. Full product journeys are planned for **Epic 3**.
+CI installs browsers with **`npm exec --workspace=e2e -- playwright install --with-deps`**; locally, **`playwright install`** is usually enough.
 
 ## Build
 

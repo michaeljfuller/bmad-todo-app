@@ -46,4 +46,6 @@ jobs:
         run: npm exec --workspace=e2e -- playwright install --with-deps
 
       - name: Run E2E tests
+        env:
+          DATABASE_PATH: ${{ runner.temp }}/bmad-e2e.db
         run: npm run test:e2e

@@ -37,7 +37,7 @@ cp api/.env.example api/.env
 npm exec --workspace=e2e -- playwright install
 ```
 
-On Windows without `cp`, copy each package’s **`.env.example`** next to **`.env`** in the same folder, or run `node scripts/bootstrap.mjs` after `npm install`.
+On Windows without `cp`, copy each package’s **`.env.example`** next to **`.env`** in the same folder, then run **`npm exec --workspace=e2e -- playwright install`**. Prefer **`npm run bootstrap`** from the repo root for the full sequence (install, env copy, Playwright). **`node scripts/bootstrap.mjs`** only copies env files—use it after **`npm install`** if you already have dependencies and only need **`.env`** files.
 
 ## Development
 

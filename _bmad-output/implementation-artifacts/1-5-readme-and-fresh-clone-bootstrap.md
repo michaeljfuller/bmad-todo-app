@@ -1,6 +1,6 @@
 # Story 1.5: README and fresh-clone bootstrap
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -104,12 +104,16 @@ _(none)_
 - `README.md`
 - `package.json`
 - `scripts/bootstrap.mjs`
+- `client/.env.example` (new)
+- `api/.env.example` (new)
+- root `.env.example` (removed; replaced by per-package examples)
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - `_bmad-output/implementation-artifacts/1-5-readme-and-fresh-clone-bootstrap.md`
 
 ### Change Log
 
 - **2026-04-09:** Story 1.5 — contributor README, root `bootstrap` script, env copy helper (`scripts/bootstrap.mjs`), sprint status `1-5` → `review`.
+- **2026-04-09:** Code review — File List + README Windows note + `bootstrap.mjs` copy error handling; story `1-5` → `done`.
 
 ---
 
@@ -121,5 +125,11 @@ Agents must follow **`_bmad-output/project-context.md`** for stack rules (Node, 
 
 **Story completion status**
 
-- **Status:** review  
-- **Note:** README + `npm run bootstrap` aligned with workspace scripts; AC1–3 satisfied; regression suite green.
+- **Status:** done  
+- **Note:** README + `npm run bootstrap` aligned with workspace scripts; AC1–3 satisfied; code-review patches applied (2026-04-09).
+
+### Review Findings
+
+- [x] [Review][Patch] Dev Agent Record File List incomplete — add `client/.env.example`, `api/.env.example`, and note removal of root `.env.example` so the record matches the diff. *(fixed)*
+- [x] [Review][Patch] README Windows bootstrap note — clarify that `node scripts/bootstrap.mjs` only copies env files; full fresh-clone path including Playwright is `npm run bootstrap` (or run the workspace `playwright install` step separately). *(fixed)*
+- [x] [Review][Patch] `scripts/bootstrap.mjs` — wrap `copyFileSync` in try/catch (or equivalent) so EACCES/ENOSPC failures exit with a short message instead of a raw stack trace. *(fixed)*

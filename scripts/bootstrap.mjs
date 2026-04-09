@@ -16,7 +16,13 @@ for (const [src, dest] of pairs) {
   if (existsSync(dest)) {
     console.log(`bootstrap: skip (exists): ${dest}`);
   } else {
-    copyFileSync(src, dest);
-    console.log(`bootstrap: created ${dest}`);
+    try {
+      copyFileSync(src, dest);
+      console.log(`bootstrap: created ${dest}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`bootstrap: could not write ${dest}: ${message}`);
+      process.exit(1);
+    }
   }
 }

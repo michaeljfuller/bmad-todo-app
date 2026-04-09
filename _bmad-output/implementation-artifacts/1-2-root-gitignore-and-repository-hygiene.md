@@ -1,6 +1,6 @@
 # Story 1.2: Root `.gitignore` and repository hygiene
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -17,18 +17,18 @@ so that **secrets, build output, local databases, and test artifacts never get c
 
 ## Tasks / Subtasks
 
-- [ ] **Create root `.gitignore`** at repository root (same level as future `client/`, `api/`) — single file for the whole monorepo-style layout ([Source: `_bmad-output/planning-artifacts/architecture.md` — Project Structure]) (AC: 1–2).
-- [ ] **Minimum pattern set** (AC: 1)
-  - [ ] `node_modules/` (root and applies recursively).
-  - [ ] Build / bundle: `dist/`, `build/`, `.vite/` (Vite cache), `*.local` if used for generated local bundles (optional—only if your scaffold creates them).
-  - [ ] **Secrets:** `.env`, `.env.local`, `.env.*.local` — **and** verify **`.env.example` is NOT ignored** (use negation `!.env.example` if you use a broad `.env*` rule, or list explicit ignore patterns instead of `.env*`) ([Source: `_bmad-output/project-context.md` — Env]).
-  - [ ] SQLite / local DB: `*.db`, `*.sqlite`, `*.sqlite3`, `*.db-journal`, `*.sqlite*-journal` / WAL sidecars if your tooling creates them (e.g. `*-shm`, `*-wal`) — align with how `better-sqlite3` / Drizzle will write files under `DATABASE_PATH` in later epics.
-  - [ ] Logs: `logs/`, `*.log`, `npm-debug.log*`, `yarn-debug.log*`, `pnpm-debug.log*`.
-  - [ ] Coverage / test artifacts: `coverage/`, `.nyc_output/`, `.vitest/` if created by Vitest coverage.
-  - [ ] OS/IDE: `.DS_Store`, `Thumbs.db`, `.idea/`, `.vscode/` **or** keep `.vscode/` tracked if the team commits shared settings — **default for this project:** ignore `.DS_Store` and common junk; if you commit `.vscode/extensions.json` by policy, use selective ignores (document in comment block).
-  - [ ] Playwright: `playwright-report/`, `test-results/`, `blob-report/`, and local browser cache dirs often under `.cache/ms-playwright` or `.cache/playwright` — include patterns that match [Playwright output dirs](https://playwright.dev/docs/test-reporters) for your chosen config.
-- [ ] **Comments** (AC: 2): 3–8 lines grouping sections (dependencies, build, env, db, test/coverage, playwright, OS).
-- [ ] **Sanity check:** `git check-ignore -v .env.example` must **not** list `.gitignore` as ignoring it; `git check-ignore -v .env` **should** ignore a dummy `.env` if you create one locally (remove after check).
+- [x] **Create root `.gitignore`** at repository root (same level as future `client/`, `api/`) — single file for the whole monorepo-style layout ([Source: `_bmad-output/planning-artifacts/architecture.md` — Project Structure]) (AC: 1–2).
+- [x] **Minimum pattern set** (AC: 1)
+  - [x] `node_modules/` (root and applies recursively).
+  - [x] Build / bundle: `dist/`, `build/`, `.vite/` (Vite cache), `*.local` if used for generated local bundles (optional—only if your scaffold creates them).
+  - [x] **Secrets:** `.env`, `.env.local`, `.env.*.local` — **and** verify **`.env.example` is NOT ignored** (use negation `!.env.example` if you use a broad `.env*` rule, or list explicit ignore patterns instead of `.env*`) ([Source: `_bmad-output/project-context.md` — Env]).
+  - [x] SQLite / local DB: `*.db`, `*.sqlite`, `*.sqlite3`, `*.db-journal`, `*.sqlite*-journal` / WAL sidecars if your tooling creates them (e.g. `*-shm`, `*-wal`) — align with how `better-sqlite3` / Drizzle will write files under `DATABASE_PATH` in later epics.
+  - [x] Logs: `logs/`, `*.log`, `npm-debug.log*`, `yarn-debug.log*`, `pnpm-debug.log*`.
+  - [x] Coverage / test artifacts: `coverage/`, `.nyc_output/`, `.vitest/` if created by Vitest coverage.
+  - [x] OS/IDE: `.DS_Store`, `Thumbs.db`, `.idea/`, `.vscode/` **or** keep `.vscode/` tracked if the team commits shared settings — **default for this project:** ignore `.DS_Store` and common junk; if you commit `.vscode/extensions.json` by policy, use selective ignores (document in comment block).
+  - [x] Playwright: `playwright-report/`, `test-results/`, `blob-report/`, and local browser cache dirs often under `.cache/ms-playwright` or `.cache/playwright` — include patterns that match [Playwright output dirs](https://playwright.dev/docs/test-reporters) for your chosen config.
+- [x] **Comments** (AC: 2): 3–8 lines grouping sections (dependencies, build, env, db, test/coverage, playwright, OS).
+- [x] **Sanity check:** `git check-ignore -v .env.example` must **not** list `.gitignore` as ignoring it; `git check-ignore -v .env` **should** ignore a dummy `.env` if you create one locally (remove after check).
 
 ## Dev Notes
 
@@ -69,19 +69,33 @@ No automated test required for `.gitignore` itself. **Manual verification:** `gi
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+gpt-5.3-codex-low
 
 ### Debug Log References
 
+- `git rev-parse --is-inside-work-tree` -> `true`
+- `git check-ignore -v .env.example .env` -> only `.env` matched by `.gitignore:16:.env`
+
 ### Completion Notes List
+
+- Created root `.gitignore` with sections for dependencies, build output, env secrets, SQLite artifacts, logs, coverage, Playwright, and OS/editor clutter.
+- Included concise comment block at the top to explain non-obvious hygiene intent and lockfile/`.env.example` tracking behavior.
+- Added optional future-safe local data/temp ignores (`data/`, `tmp/`, `.tmp/`) referenced in architecture notes.
+- Manually validated `.env` is ignored while `.env.example` remains trackable.
 
 ### File List
 
-_(filled by dev agent on completion)_
+- `.gitignore`
+- `_bmad-output/implementation-artifacts/1-2-root-gitignore-and-repository-hygiene.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+
+### Change Log
+
+- 2026-04-09: Implemented Story 1.2 root repository hygiene and manual ignore verification.
 
 ---
 
 **Story completion status**
 
-- **Status:** ready-for-dev  
-- **Note:** Ultimate context engine analysis completed — comprehensive developer guide created.
+- **Status:** done  
+- **Note:** Review complete; story accepted.

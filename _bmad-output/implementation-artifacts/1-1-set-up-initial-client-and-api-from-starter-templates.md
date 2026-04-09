@@ -1,6 +1,6 @@
 # Story 1.1: Set up initial client and API from starter templates
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -91,6 +91,7 @@ Cursor agent (Amelia / dev-story workflow), 2026-04-09.
 - **AC2:** `api/` from create-fastify (equivalent to `npm init fastify` scaffold): `app.js`, `plugins/`, `routes/`, `@fastify/autoload`; `npm test` (Node built-in `node:test`, 3 passing); `npm run lint` via `eslint.config.mjs` + `npm run lint`; `npm start` / `npm run dev` verified (HTTP 200 on `/`).
 - **AC3:** `engines.node` `>=20` in `client/package.json` and `api/package.json`; Node 20+ called out in root `README.md`, `client/README.md`, `api/README.md`.
 - **`_bmad-output/project-context.md`:** `codebase_status` → `scaffolded`; technology stack table updated with pinned stack summary.
+- **Code review (2026-04-09):** Decision **2** — keep semver ranges in `package.json`; lockfiles authoritative; recorded in `project-context.md`. Patch: `rel="noopener noreferrer"` on all `target="_blank"` links in `client/src/App.tsx`.
 
 ### File List
 
@@ -101,10 +102,17 @@ Cursor agent (Amelia / dev-story workflow), 2026-04-09.
 ### Change Log
 
 - 2026-04-09: Story 1.1 — scaffolded `client/` (Vite + React + TS + Vitest + ESLint) and `api/` (Fastify + autoload + Node test + ESLint); Node ≥20 documented; relocated mistaken root Fastify files into `api/`; updated `project-context.md` stack status.
+- 2026-04-09: Code review — resolved dependency-pinning decision (lockfiles authoritative); added `rel="noopener noreferrer"` on external links in `client/src/App.tsx`.
+
+### Review Findings
+
+- [x] [Review][Decision] **package.json pinning vs story Dev Notes** — **Resolved:** option **2** — keep `^` in manifests; `package-lock.json` authoritative; sentence added under Technology Stack in `_bmad-output/project-context.md`.
+
+- [x] [Review][Patch] **External links missing `rel` on `target="_blank"`** [`client/src/App.tsx`] — **Fixed:** `rel="noopener noreferrer"` on all six external anchors.
 
 ---
 
 **Story completion status**
 
-- **Status:** review  
-- **Note:** Ready for code review; run full test/lint in `client/` and `api/` before merge.
+- **Status:** done  
+- **Note:** Code review complete; `client` test + lint passing after link fix.

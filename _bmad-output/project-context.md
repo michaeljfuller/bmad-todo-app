@@ -44,6 +44,8 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 **Env:** Client exposes only **`VITE_*`** to the browser. API: **`PORT`**, **`DATABASE_PATH`**, **`CORS_ORIGIN`**, log level, **`NODE_ENV`**—never ship secrets to the client bundle.
 
+**Dependency versions:** Direct dependencies may use semver ranges in each `package.json`; committed **`package-lock.json`** files are the reproducible source of truth for installs and CI unless a story explicitly pins exact versions in the manifest.
+
 ---
 
 ## Critical Implementation Rules

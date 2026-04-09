@@ -1,6 +1,6 @@
 # Story 2.4: OpenAPI contract, CORS configuration, and CI job for API integration tests
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -129,4 +129,4 @@ GPT-5.2 (Cursor agent)
 
 ---
 
-**Story completion status:** review — Implementation complete; all tasks checked; full `api` test suite green.
+**Story completion status:** done — Code review clean (2026-04-09); integration suite green.

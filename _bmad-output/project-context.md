@@ -92,7 +92,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 ### Ways of working (tools & review)
 
-- **API:** While implementing or changing the API, use **Postman MCP** to exercise endpoints and **validate behavior against the contract** (status codes, JSON shape, errors)—keep results aligned with **OpenAPI**.
+- **API changes → collection + Postman MCP:** Whenever you **change the API** (routes, request/response schemas, status codes, or error shapes), **update** the checked-in Postman collection (**`api/postman/bmad-todo-api.postman_collection.json`**) so it matches the new contract. **Postman does not auto-sync** from the repo file into the Postman app—**before calling Postman MCP**, **prompt the human to import** the updated collection (or re-import/replace the workspace copy), and **only use Postman MCP after** they confirm they **imported** the updated file (or that their Postman workspace already matches it). Then **validate**: exercise endpoints, compare responses to **OpenAPI** and the collection, and resolve mismatches before treating the change as done. Do not rely on code review alone for contract correctness when Postman MCP is available.
 - **Frontend:** During development, use **Chrome DevTools** to **debug and inspect** (network, console, React/components as applicable). Use **Playwright MCP** to **automate browser interactions** when that speeds up verification or mirrors E2E-style flows.
 - **Code review:** In addition to correctness, explicitly check for **common security issues** relevant to this stack—for example **XSS** (unsafe rendering, `dangerouslySetInnerHTML`, unsanitized HTML in the DOM), **injection** (e.g. **SQL** via string concatenation or non-parameterized queries; validate use of Drizzle/ORM and bound inputs), and other **OWASP-style** basics (unsafe redirects, sensitive data in logs or client bundles).
 
@@ -112,7 +112,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 
 - Read this file before implementing any code in this repository.
 - Follow **all** rules above; when architecture and this file overlap, treat them as one contract.
-- Use the **Ways of working** tools when available (**Postman MCP**, **Chrome DevTools**, **Playwright MCP**) and hold unit coverage and **review security** checks to the stated bar.
+- After **API changes**, **update the Postman collection** under **`api/postman/`**. **Before Postman MCP:** ask the user to **import** that file into Postman (changes are not automatic); proceed with MCP **only after** they confirm. Then **validate the API contract**; also use **Chrome DevTools** and **Playwright MCP** where they help. Hold unit coverage and **review security** checks to the stated bar.
 - If something is ambiguous, prefer the **stricter** interpretation (correctness, single contract, server as source of truth).
 - After scaffolding, **update the Technology Stack table** with pinned versions from `package.json` / lockfiles.
 

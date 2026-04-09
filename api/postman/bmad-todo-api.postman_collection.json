@@ -1,0 +1,75 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "BMad Todo API",
+    "description": "Fastify REST surface under `api/`. Import into Postman or VS Code REST Client alternatives.\n\n**Maintenance:** When you add or change routes under `api/routes/`, update this file in the same PR. Default server: `npm run dev` / `npm start` in `api/` (fastify-cli default port **3000** unless `PORT` is set).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Root",
+      "item": [
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/",
+            "description": "Scaffold root — `{ \"root\": true }`."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /example",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/example",
+            "description": "Scaffold example route."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Todos",
+      "item": [
+        {
+          "name": "List todos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/todos",
+            "description": "Returns `{ \"todos\": [ { id, text, completed, createdAt, updatedAt } ] }` ordered by `createdAt`."
+          },
+          "response": []
+        },
+        {
+          "name": "Create todo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Buy milk\"\n}"
+            },
+            "url": "{{baseUrl}}/todos",
+            "description": "Body: `{ \"text\": string }` (1..10000 chars). **201** with todo object; **400** with error envelope on validation failure."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

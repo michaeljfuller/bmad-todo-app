@@ -13,9 +13,8 @@ build/
 *.local
 
 # Environment and secrets (example file stays committed)
-.env
-.env.local
-.env.*.local
+.env*
+!.env.example
 
 # SQLite and local database files
 *.db
@@ -25,8 +24,6 @@ build/
 *.sqlite*-journal
 *.sqlite-shm
 *.sqlite-wal
-*-shm
-*-wal
 data/
 tmp/
 .tmp/

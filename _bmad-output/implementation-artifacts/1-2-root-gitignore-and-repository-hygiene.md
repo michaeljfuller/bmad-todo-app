@@ -1,6 +1,6 @@
 # Story 1.2: Root `.gitignore` and repository hygiene
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -97,5 +97,5 @@ gpt-5.3-codex-low
 
 **Story completion status**
 
-- **Status:** review  
-- **Note:** Story implementation complete; ready for code review.
+- **Status:** done  
+- **Note:** Review complete; story accepted.

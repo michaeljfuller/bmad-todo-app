@@ -14,6 +14,7 @@
 - Asking it to create a Postman collection, and then to add validation tests.
 - `/bmad-generate-project-context` to describe some additional tasks, like keeping the Postman collection updated and reminding me to reimport.
 - `/bmad-help` to find out how to add the above context.
+- `/bmad-agent-sm /bmad-retrospective` with epic ID.
 
 ## MCP Server Usage  
 > Which MCP servers did you use? How did they help?  

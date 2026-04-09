@@ -1,6 +1,6 @@
 # Story 2.3: Update completion and delete todos with 404 semantics and integration tests
 
-Status: ready-for-dev
+Status: done
 
 <!-- Ultimate context engine analysis completed — comprehensive developer guide created. -->
 
@@ -20,22 +20,22 @@ so that **users can complete, uncomplete, and remove todos** (**FR20**, **FR21**
 
 ## Tasks / Subtasks
 
-- [ ] **Prerequisites (blockers)** (AC: all)
-  - [ ] Confirm Story **2.1** (Drizzle schema + migrations + `todos` table) and **2.2** (`GET` list + `POST` create, prefix locked, integration harness) are done — this story **extends** those routes; do not invent a second prefix or error shape.
-- [ ] **PATCH completion** (AC: #1, #3, #5)
-  - [ ] Implement **`PATCH /{prefix}/:id`** (prefix is whatever 2.2 locked: `/todos` or `/api/todos`) with JSON body accepting at least `{ "completed": boolean }`; validate with Fastify JSON Schema (or agreed boundary validator).
-  - [ ] On success: update `completed` and **`updated_at`** in SQLite; return **full** todo DTO (`id`, `text`, `completed`, `createdAt`, `updatedAt`).
-  - [ ] On unknown id: **`404`** + standard error envelope (stable `code` string, safe `message`).
-  - [ ] On invalid body: **`400`** + envelope.
-- [ ] **DELETE todo** (AC: #2, #3)
-  - [ ] Implement **`DELETE /{prefix}/:id`**; remove row when present.
-  - [ ] Apply **one** success response style project-wide: prefer **`204 No Content`** with **empty body** *or* **`200`** with a small JSON body — **must match** Architecture “do not mix” rule and whatever you document for 2.4.
-  - [ ] Unknown id: **`404`** + same envelope as PATCH.
-- [ ] **Integration tests** (AC: #4)
-  - [ ] Add/extend **`api/test/integration/`** using **`fastify.inject`** (or equivalent) against a **real** app build with **isolated test SQLite** per run (same pattern as 2.2).
-  - [ ] Tests: create todo via **POST** → **PATCH** toggle → assert JSON + **`updatedAt`** strictly after previous; **PATCH** missing id → 404; **DELETE** existing → success convention; **DELETE** missing → 404; list or get semantics prove row gone after delete.
-- [ ] **Logging / observability** (AC: implied FR25, NFR-S3)
-  - [ ] Log mutation outcomes at appropriate level; include **todo id** when relevant; do not return stack traces or internal details in JSON errors.
+- [x] **Prerequisites (blockers)** (AC: all)
+  - [x] Confirm Story **2.1** (Drizzle schema + migrations + `todos` table) and **2.2** (`GET` list + `POST` create, prefix locked, integration harness) are done — this story **extends** those routes; do not invent a second prefix or error shape.
+- [x] **PATCH completion** (AC: #1, #3, #5)
+  - [x] Implement **`PATCH /{prefix}/:id`** (prefix is whatever 2.2 locked: `/todos` or `/api/todos`) with JSON body accepting at least `{ "completed": boolean }`; validate with Fastify JSON Schema (or agreed boundary validator).
+  - [x] On success: update `completed` and **`updated_at`** in SQLite; return **full** todo DTO (`id`, `text`, `completed`, `createdAt`, `updatedAt`).
+  - [x] On unknown id: **`404`** + standard error envelope (stable `code` string, safe `message`).
+  - [x] On invalid body: **`400`** + envelope.
+- [x] **DELETE todo** (AC: #2, #3)
+  - [x] Implement **`DELETE /{prefix}/:id`**; remove row when present.
+  - [x] Apply **one** success response style project-wide: prefer **`204 No Content`** with **empty body** *or* **`200`** with a small JSON body — **must match** Architecture “do not mix” rule and whatever you document for 2.4.
+  - [x] Unknown id: **`404`** + same envelope as PATCH.
+- [x] **Integration tests** (AC: #4)
+  - [x] Add/extend **`api/test/integration/`** using **`fastify.inject`** (or equivalent) against a **real** app build with **isolated test SQLite** per run (same pattern as 2.2).
+  - [x] Tests: create todo via **POST** → **PATCH** toggle → assert JSON + **`updatedAt`** strictly after previous; **PATCH** missing id → 404; **DELETE** existing → success convention; **DELETE** missing → 404; list or get semantics prove row gone after delete.
+- [x] **Logging / observability** (AC: implied FR25, NFR-S3)
+  - [x] Log mutation outcomes at appropriate level; include **todo id** when relevant; do not return stack traces or internal details in JSON errors.
 
 ## Dev Notes
 
@@ -92,15 +92,34 @@ so that **users can complete, uncomplete, and remove todos** (**FR20**, **FR21**
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Cursor agent (Claude) — dev-story workflow for 2-3.
 
 ### Debug Log References
 
+- fastify-cli only merges `app.js` `module.exports.options` when `-o` / `--options` is passed; tests now use `[AppPath, '--options']`; `npm run start` / `dev` in `api/` updated with `-o` so Ajv `removeAdditional: false` applies at runtime.
+
 ### Completion Notes List
+
+- **AC1:** `PATCH /todos/:id` with `{ "completed": boolean }` updates row, sets `updated_at` to epoch ms, returns full camelCase todo with ISO UTC timestamps.
+- **AC2:** `DELETE /todos/:id` returns **204** with empty body on success (single convention per project-context).
+- **AC3:** Missing numeric id or invalid id string shape → **404** + `{ error: { code: "TODO_NOT_FOUND", message } }` for PATCH and DELETE.
+- **AC4:** `api/test/integration/todos-patch-delete.test.js` — POST→PATCH→GET persistence, `updatedAt` increase, 404 cases, DELETE 204 + list empty, PATCH uncomplete, invalid/extra body → 400 `VALIDATION_ERROR`.
+- **AC5 / NFR-S1:** `additionalProperties: false` on PATCH body; Ajv `removeAdditional: false` via `app.js` options + `--options` so pathological/extra keys are **400**, not stripped silently.
 
 ### File List
 
-_(filled by dev agent)_
+- `api/routes/todos/index.js`
+- `api/app.js`
+- `api/package.json`
+- `api/test/helper.js`
+- `api/test/integration/todos-patch-delete.test.js`
+- `api/postman/bmad-todo-api.postman_collection.json`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/2-3-update-completion-and-delete-todos-with-404-semantics-and-integration-tests.md`
+
+## Change Log
+
+- **2026-04-09:** Story 2.3 — PATCH completion, DELETE with 204, 404/400 envelopes, integration tests, Postman entries, Ajv strict unknown-key rejection with fastify-cli `--options` wiring.
 
 ---
 

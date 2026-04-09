@@ -2,13 +2,17 @@
   "info": {
     "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "name": "BMad Todo API",
-    "description": "Fastify REST surface under `api/`. Import into Postman or VS Code REST Client alternatives.\n\n**Maintenance:** When you add or change routes under `api/routes/`, update this file in the same PR. Default server: `npm run dev` / `npm start` in `api/` (fastify-cli default port **3000** unless `PORT` is set).",
+    "description": "Fastify REST surface under `api/`. Import into Postman or VS Code REST Client alternatives.\n\n**Maintenance:** When you add or change routes under `api/routes/`, update this file in the same PR. Default server: `npm run dev` / `npm start` in `api/` (fastify-cli default port **3000** unless `PORT` is set).\n\n**Collection tests:** Run the **Todos** folder **top to bottom** (List → Create → PATCH → Delete). **Create** stores `todoId` for the next two requests.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
       "value": "http://localhost:3000"
+    },
+    {
+      "key": "todoId",
+      "value": ""
     }
   ],
   "item": [
@@ -17,6 +21,23 @@
       "item": [
         {
           "name": "GET /",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('body is { root: true }', function () {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.eql({ root: true });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
@@ -27,6 +48,22 @@
         },
         {
           "name": "GET /example",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('body mentions example scaffold', function () {",
+                  "  pm.expect(pm.response.text()).to.match(/example/i);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
@@ -39,9 +76,36 @@
     },
     {
       "name": "Todos",
+      "description": "Run requests **in order**. **Create todo** sets collection variable `todoId` for PATCH and Delete.",
       "item": [
         {
           "name": "List todos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('body has todos array', function () {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.have.property('todos');",
+                  "  pm.expect(j.todos).to.be.an('array');",
+                  "});",
+                  "pm.test('each todo has required fields when non-empty', function () {",
+                  "  const j = pm.response.json();",
+                  "  j.todos.forEach(function (t) {",
+                  "    pm.expect(t).to.include.keys('id', 'text', 'completed', 'createdAt', 'updatedAt');",
+                  "    pm.expect(t.createdAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T.*Z$/);",
+                  "    pm.expect(t.updatedAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T.*Z$/);",
+                  "  });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
@@ -52,6 +116,29 @@
         },
         {
           "name": "Create todo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('response is full todo with camelCase dates', function () {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.include.keys('id', 'text', 'completed', 'createdAt', 'updatedAt');",
+                  "  pm.expect(j.text).to.eql('Buy milk');",
+                  "  pm.expect(j.completed).to.be.false;",
+                  "  pm.expect(j.createdAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T.*Z$/);",
+                  "  pm.expect(j.updatedAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T.*Z$/);",
+                  "});",
+                  "const created = pm.response.json();",
+                  "pm.collectionVariables.set('todoId', String(created.id));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -65,7 +152,95 @@
               "raw": "{\n  \"text\": \"Buy milk\"\n}"
             },
             "url": "{{baseUrl}}/todos",
-            "description": "Body: `{ \"text\": string }` (1..10000 chars). **201** with todo object; **400** with error envelope on validation failure."
+            "description": "Body: `{ \"text\": string }` (1..10000 chars). **201** with todo object; **400** with error envelope on validation failure. Saves **todoId** for PATCH/Delete."
+          },
+          "response": []
+        },
+        {
+          "name": "Update todo completion (PATCH)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const id = pm.collectionVariables.get('todoId');",
+                  "if (!id) {",
+                  "  throw new Error('Run Create todo first (Todos folder top-to-bottom).');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('completed is true and timestamps ISO UTC', function () {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.completed).to.be.true;",
+                  "  pm.expect(j.text).to.eql('Buy milk');",
+                  "  pm.expect(j.updatedAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T.*Z$/);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"completed\": true\n}"
+            },
+            "url": "{{baseUrl}}/todos/{{todoId}}",
+            "description": "Body: `{ \"completed\": boolean }` only. **200** with full todo; **400** validation envelope; **404** `TODO_NOT_FOUND` for missing/invalid id shape. Requires **todoId** from Create."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete todo",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const id = pm.collectionVariables.get('todoId');",
+                  "if (!id) {",
+                  "  throw new Error('Run Create todo first (Todos folder top-to-bottom).');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('status is 204 No Content', function () {",
+                  "  pm.response.to.have.status(204);",
+                  "});",
+                  "pm.test('response body is empty', function () {",
+                  "  pm.expect(pm.response.text()).to.eql('');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/todos/{{todoId}}",
+            "description": "**204 No Content** empty body on success. **404** `TODO_NOT_FOUND` when id is missing or not a positive integer string. Requires **todoId** from Create."
           },
           "response": []
         }

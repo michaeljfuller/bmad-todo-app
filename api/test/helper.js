@@ -24,7 +24,8 @@ async function build(t) {
   const prevDb = process.env.DATABASE_PATH
   process.env.DATABASE_PATH = dbPath
 
-  const argv = [AppPath]
+  // `--options` merges `app.js` `module.exports.options` (e.g. Ajv `removeAdditional: false`).
+  const argv = [AppPath, '--options']
   const app = await buildApplication(argv, config())
 
   t.after(async () => {

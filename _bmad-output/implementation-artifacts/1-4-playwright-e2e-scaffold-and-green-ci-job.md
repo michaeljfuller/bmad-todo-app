@@ -1,6 +1,6 @@
 # Story 1.4: Playwright E2E scaffold and green CI job
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -109,8 +109,8 @@ Root: `package.json` script `test:e2e`; optional `.github/workflows/ci.yml` job 
 
 ## Story completion status
 
-- **Status:** review  
-- **Note:** Implementation complete; E2E harness + CI job green locally.
+- **Status:** done  
+- **Note:** Code review complete; README covers Linux/CI-style `playwright install --with-deps` (troubleshooting table).
 
 ## Dev Agent Record
 
@@ -147,8 +147,9 @@ None.
 
 ### Review Findings
 
-- [ ] [Review][Patch] README E2E: add a sentence for Linux/WSL contributors to use `npm exec playwright install --with-deps` (or link Playwright install docs) so local installs match CI system-deps expectations — AC #3 documentation polish [README.md]
+- [x] [Review][Patch] README E2E: add a sentence for Linux/WSL contributors to use `npm exec playwright install --with-deps` (or link Playwright install docs) so local installs match CI system-deps expectations — AC #3 documentation polish [README.md] — **Resolved:** troubleshooting table + CI note in `README.md`.
 
 ## Change Log
 
 - 2026-04-09: Story 1.4 — Playwright `e2e/` workspace, minimal smoke spec, root `test:e2e`, README E2E docs, GitHub Actions Playwright job.
+- 2026-04-09: Code review closed — README Linux/`--with-deps` guidance; story marked **done** in sprint-status.

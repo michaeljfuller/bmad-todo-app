@@ -1,5 +1,5 @@
 # generated: 2026-04-09T02:06:36Z
-# last_updated: 2026-04-09T23:45:00Z
+# last_updated: 2026-04-09T18:30:00Z
 # project: bmad-todo-app
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: "2026-04-09T02:06:36Z"
-last_updated: "2026-04-09T19:20:00Z"
+last_updated: "2026-04-09T18:30:00Z"
 project: bmad-todo-app
 project_key: NOKEY
 tracking_system: file-system
@@ -52,7 +52,7 @@ development_status:
 
   epic-2: in-progress
   2-1-sqlite-database-drizzle-schema-and-migrations-for-todos: done
-  2-2-list-and-create-todos-via-rest-with-validation-and-integration-tests: ready-for-dev
+  2-2-list-and-create-todos-via-rest-with-validation-and-integration-tests: done
   2-3-update-completion-and-delete-todos-with-404-semantics-and-integration-tests: ready-for-dev
   2-4-openapi-contract-cors-configuration-and-ci-job-for-api-integration-tests: ready-for-dev
   epic-2-retrospective: optional

@@ -4,6 +4,17 @@
 
 Bootstrapped with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli) / create-fastify (`plugins/`, `routes/`, `@fastify/autoload`).
 
+## REST (todos) — interim
+
+The API uses a **single locked prefix** **`/todos`** (see `routes/todos/index.js` and `@fastify/autoload`).
+
+| Method | Path | Notes |
+| ------ | ---- | ----- |
+| **GET** | `/todos` | Response `{ "todos": [ { id, text, completed, createdAt, updatedAt } ] }` — camelCase fields, dates as **ISO 8601 UTC** strings; ordered by `createdAt` ascending. |
+| **POST** | `/todos` | Body `{ "text": string }` — length **1..10000**; **201** with the created todo; **400** with `{ "error": { "code", "message", "details?" } }` on validation failure. |
+
+OpenAPI and CORS are finalized in **Story 2.4**; **PATCH** / **DELETE** land in **Story 2.3**.
+
 ## Persistence (SQLite + Drizzle)
 
 - **Env:** `DATABASE_PATH` — path to the SQLite file (see `.env.example`, e.g. `./data/todos.db`).
@@ -49,7 +60,7 @@ Installs use **prebuilt binaries** when available for your platform. If install 
 | ----------------- | ------------------------------------------------ |
 | `npm run dev`     | Dev server (watch).                              |
 | `npm start`       | Production mode.                                 |
-| `npm run test`    | Node test runner (`test/**/*.test.js`).          |
+| `npm run test`    | Node test runner (`test/**/*.test.js`). Uses **`--test-concurrency=1`** so suites that set `DATABASE_PATH` do not race across files. |
 | `npm run lint`    | ESLint.                                          |
 | `npm run db:generate` | Emit SQL from `db/schema.js` (`drizzle-kit`). |
 | `npm run db:migrate`  | Apply migrations to the DB at `DATABASE_PATH`.   |

@@ -1,6 +1,6 @@
 # Story 2.2: List and create todos via REST with validation and integration tests
 
-Status: review
+Status: done
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -144,6 +144,8 @@ Composer (Cursor agent)
 
 ### File List
 
+- `api/README.md`
+- `api/package.json`
 - `api/plugins/database.js`
 - `api/plugins/error-envelope.js`
 - `api/routes/todos/index.js`
@@ -152,6 +154,12 @@ Composer (Cursor agent)
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - `_bmad-output/implementation-artifacts/2-2-list-and-create-todos-via-rest-with-validation-and-integration-tests.md`
 
+### Review Findings
+
+- [x] [Review][Patch] Add interim REST note for locked prefix — AC1 asks to document the chosen path in code comments **and** an interim README note; `api/README.md` covers persistence but not **`GET/POST /todos`**. [_bmad-output/implementation-artifacts/2-2-list-and-create-todos-via-rest-with-validation-and-integration-tests.md — AC1] — fixed: **REST (todos) — interim** section in `api/README.md`.
+- [x] [Review][Patch] Serialize API tests or stop using global `DATABASE_PATH` — `api/test/helper.js` assigns `process.env.DATABASE_PATH` while Node’s test runner may run **multiple test files in parallel** (Node's default test file concurrency is greater than one unless overridden), so concurrent suites can race and point the DB plugin at the wrong file. Prefer `npm test` with `--test-concurrency=1` or pass the DB path via Fastify options instead of mutating `process.env`. [api/test/helper.js, api/package.json] — fixed: **`npm test`** runs with **`--test-concurrency=1`**; README scripts table documents why.
+
 ## Change Log
 
+- **2026-04-09:** Code review patches — `api/README.md` interim REST `/todos` table; `api/package.json` `npm test` uses `--test-concurrency=1` to avoid `DATABASE_PATH` races across test files.
 - **2026-04-09:** Story 2.2 implemented — REST list/create at `/todos`, Drizzle persistence, JSON Schema validation, error envelope plugin, integration tests, test helper temp DB.

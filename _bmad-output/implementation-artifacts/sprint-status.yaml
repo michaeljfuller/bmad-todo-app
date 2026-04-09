@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: "2026-04-09T02:06:36Z"
-last_updated: "2026-04-09T09:41:15Z"
+last_updated: "2026-04-09T18:50:00Z"
 project: bmad-todo-app
 project_key: NOKEY
 tracking_system: file-system
@@ -45,7 +45,7 @@ development_status:
   epic-1: in-progress
   1-1-set-up-initial-client-and-api-from-starter-templates: done
   1-2-root-gitignore-and-repository-hygiene: done
-  1-3-root-workspace-dev-orchestration-and-shared-test-scripts: ready-for-dev
+  1-3-root-workspace-dev-orchestration-and-shared-test-scripts: done
   1-4-playwright-e2e-scaffold-and-green-ci-job: ready-for-dev
   1-5-readme-and-fresh-clone-bootstrap: ready-for-dev
   epic-1-retrospective: optional

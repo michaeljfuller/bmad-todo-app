@@ -1,6 +1,6 @@
 # Story 1.3: Root workspace, dev orchestration, and shared test scripts
 
-Status: ready-for-dev
+Status: done
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -21,12 +21,12 @@ So that **day-to-day work does not require juggling multiple terminals manually*
 
 ## Tasks / Subtasks
 
-- [ ] Add root `package.json` with `workspaces: ["client", "api"]` (or equivalent documented layout) so `npm install` at root installs workspace deps where applicable (AC: workspaces)
-- [ ] Add dev dependency **concurrently** (or **npm-run-all**) and root script **`dev`** that runs `client` and `api` dev commands in parallel; document default ports (e.g. Vite **5173**, API per **`PORT`**) in README or root comment (AC: dev script)
-- [ ] Add root **`test`** or **`test:unit`** that runs both packages’ unit test scripts; document whether first failure stops the rest or all run with aggregated exit code (AC: shared tests)
-- [ ] Ensure **`npm run dev`** / **`npm run test`** from **`client/`** and **`api/`** still work standalone (no regression to per-package workflows) (AC: independent package scripts)
-- [ ] Add or align **`.env.example`**: at minimum root **or** per-package files listing **`VITE_API_BASE_URL`** (or agreed `VITE_*` name), **`PORT`**, **`DATABASE_PATH`**, **`CORS_ORIGIN`**, **`LOG_LEVEL`**, **`NODE_ENV`** — placeholders only, no secrets (AC: env example)
-- [ ] Document proxy vs explicit API URL for local dev (Architecture: “wire dev proxies or env”) in README stub or Story 1.5 prep — at least one sentence in root README or `.env.example` comments if README not fully expanded yet (supporting AC)
+- [x] Add root `package.json` with `workspaces: ["client", "api"]` (or equivalent documented layout) so `npm install` at root installs workspace deps where applicable (AC: workspaces)
+- [x] Add dev dependency **concurrently** (or **npm-run-all**) and root script **`dev`** that runs `client` and `api` dev commands in parallel; document default ports (e.g. Vite **5173**, API per **`PORT`**) in README or root comment (AC: dev script)
+- [x] Add root **`test`** or **`test:unit`** that runs both packages’ unit test scripts; document whether first failure stops the rest or all run with aggregated exit code (AC: shared tests)
+- [x] Ensure **`npm run dev`** / **`npm run test`** from **`client/`** and **`api/`** still work standalone (no regression to per-package workflows) (AC: independent package scripts)
+- [x] Add or align **`.env.example`**: at minimum root **or** per-package files listing **`VITE_API_BASE_URL`** (or agreed `VITE_*` name), **`PORT`**, **`DATABASE_PATH`**, **`CORS_ORIGIN`**, **`LOG_LEVEL`**, **`NODE_ENV`** — placeholders only, no secrets (AC: env example)
+- [x] Document proxy vs explicit API URL for local dev (Architecture: “wire dev proxies or env”) in README stub or Story 1.5 prep — at least one sentence in root README or `.env.example` comments if README not fully expanded yet (supporting AC)
 
 ## Dev Notes
 
@@ -79,10 +79,44 @@ So that **day-to-day work does not require juggling multiple terminals manually*
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+gpt-5.3-codex-low (Amelia / bmad-agent-dev)
 
 ### Debug Log References
 
+- `npm install` (repo root)
+- `npm run test` (repo root)
+- `npm run test` (`client/`)
+- `npm run test` (`api/`)
+- `npm run lint` (`client/`)
+- `npm run lint` (`api/`)
+
 ### Completion Notes List
 
+- Added root workspace orchestration via `package.json` with `workspaces: ["client", "api"]`.
+- Added root `dev` script using `concurrently` with named prefixes `[client]` and `[api]`.
+- Added root `test` and `test:unit` scripts; documented fail-fast behavior in `README.md`.
+- Added root `.env.example` with non-secret placeholders: `VITE_API_BASE_URL`, `PORT`, `DATABASE_PATH`, `CORS_ORIGIN`, `LOG_LEVEL`, `NODE_ENV`.
+- Documented explicit API URL vs proxy approach for local dev in `README.md` and `.env.example` comments.
+- Verified shared and standalone workflows with passing test and lint commands for both packages.
+
 ### File List
+
+- `package.json` (post-review: exact `concurrently`)
+- `package-lock.json`
+- `.env.example` (post-review: env placement comment)
+- `README.md` (post-review: Environment variables section)
+- `_bmad-output/implementation-artifacts/1-3-root-workspace-dev-orchestration-and-shared-test-scripts.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+
+### Change Log
+
+- 2026-04-09: Implemented Story 1.3 root workspace orchestration, shared test scripts, env examples, and documentation updates; validated with root + package-level tests and lint.
+- 2026-04-09: Code review closed — decision **B** (root-only `.env.example`); pinned `concurrently@9.2.1`; documented package-local `.env` loading in `README.md` and `.env.example`.
+
+### Review Findings
+
+- [x] [Review][Decision] Per-package `.env.example` vs root-only — **Resolved (B):** keep root-only `.env.example`; Dev Notes treated as non-binding for layout.
+
+- [x] [Review][Patch] Pin `concurrently` to an exact version (remove `^`) per story Library / tooling note — `package.json` (pinned `9.2.1`)
+
+- [x] [Review][Patch] Document that Vite reads env from `client/` and the API from `api/` so developers copy relevant lines from root `.env.example` into package-local `.env` as needed — `README.md` + `.env.example`

@@ -1,6 +1,6 @@
 # Story 1.4: Playwright E2E scaffold and green CI job
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -24,21 +24,21 @@ so that **CI proves the E2E harness works before product journeys are added in E
 
 ## Tasks / Subtasks
 
-- [ ] **Scaffold `e2e/`** (AC: #1, #2)
-  - [ ] Add `e2e/package.json` with `@playwright/test` (pin version in lockfile after first install; align with [Source: _bmad-output/project-context.md] E2E = Playwright).
-  - [ ] Add `e2e/playwright.config.ts` (TypeScript; reasonable defaults: `testDir: './tests'`, `reporter: 'html'` optional for local debugging; **do not** require `baseURL` to the Vite app for the minimal spec).
-  - [ ] Add `e2e/tests/*.spec.ts` with one minimal test (e.g. `await page.goto('about:blank'); await expect(page).toHaveURL('about:blank');` or navigate to `data:text/html,<html>...</html>` if you prefer—must be hermetic and fast).
-  - [ ] Wire **`test:e2e`** at root (and/or in `e2e/`) so from repo root one command runs the suite (e.g. `npm run test:e2e -w e2e` or `cd e2e && npm test`—match Story 1.3 workspace conventions).
+- [x] **Scaffold `e2e/`** (AC: #1, #2)
+  - [x] Add `e2e/package.json` with `@playwright/test` (pin version in lockfile after first install; align with [Source: _bmad-output/project-context.md] E2E = Playwright).
+  - [x] Add `e2e/playwright.config.ts` (TypeScript; reasonable defaults: `testDir: './tests'`, `reporter: 'html'` optional for local debugging; **do not** require `baseURL` to the Vite app for the minimal spec).
+  - [x] Add `e2e/tests/*.spec.ts` with one minimal test (e.g. `await page.goto('about:blank'); await expect(page).toHaveURL('about:blank');` or navigate to `data:text/html,<html>...</html>` if you prefer—must be hermetic and fast).
+  - [x] Wire **`test:e2e`** at root (and/or in `e2e/`) so from repo root one command runs the suite (e.g. `npm run test:e2e -w e2e` or `cd e2e && npm test`—match Story 1.3 workspace conventions).
 
-- [ ] **Documentation** (AC: #3)
-  - [ ] In root **README**, add a short **E2E / Playwright** subsection: one-time browser install, how to run `test:e2e`, and pointer that **full user journeys** land in **Epic 3** (this story is harness only).
+- [x] **Documentation** (AC: #3)
+  - [x] In root **README**, add a short **E2E / Playwright** subsection: one-time browser install, how to run `test:e2e`, and pointer that **full user journeys** land in **Epic 3** (this story is harness only).
 
-- [ ] **CI job** (AC: #4)
-  - [ ] Add `.github/workflows/ci.yml` (or extend if 1.1–1.3 already added a workflow) with a **dedicated job** (or step matrix) that: checks out repo, sets up **Node ≥ 20**, installs dependencies (root workspaces if used), runs **`npx playwright install --with-deps`** (or pnpm equivalent), then **`npm run test:e2e`** (or documented equivalent).
-  - [ ] Ensure the job does **not** assume **Docker**, **Compose**, or **API integration tests** (those are **Epic 2 / 4** per [Source: _bmad-output/planning-artifacts/epics.md#Epic-1]).
+- [x] **CI job** (AC: #4)
+  - [x] Add `.github/workflows/ci.yml` (or extend if 1.1–1.3 already added a workflow) with a **dedicated job** (or step matrix) that: checks out repo, sets up **Node ≥ 20**, installs dependencies (root workspaces if used), runs **`npx playwright install --with-deps`** (or pnpm equivalent), then **`npm run test:e2e`** (or documented equivalent).
+  - [x] Ensure the job does **not** assume **Docker**, **Compose**, or **API integration tests** (those are **Epic 2 / 4** per [Source: _bmad-output/planning-artifacts/epics.md#Epic-1]).
 
-- [ ] **Hygiene** (AC: #1–#4)
-  - [ ] Confirm **`.gitignore`** from Story 1.2 already excludes Playwright artifacts (`playwright-report/`, `test-results/`, etc.); add any missing entries if the scaffold creates new cache paths.
+- [x] **Hygiene** (AC: #1–#4)
+  - [x] Confirm **`.gitignore`** from Story 1.2 already excludes Playwright artifacts (`playwright-report/`, `test-results/`, etc.); add any missing entries if the scaffold creates new cache paths.
 
 ## Dev Notes
 
@@ -109,19 +109,46 @@ Root: `package.json` script `test:e2e`; optional `.github/workflows/ci.yml` job 
 
 ## Story completion status
 
-- **Status:** ready-for-dev  
-- **Note:** Ultimate context engine analysis completed — comprehensive developer guide created for Story 1.4.
+- **Status:** review  
+- **Note:** Implementation complete; E2E harness + CI job green locally.
 
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Composer (Cursor agent)
 
 ### Debug Log References
 
+None.
+
+### Implementation Plan
+
+- Added `e2e` npm workspace with `@playwright/test`, `playwright.config.ts` (`testDir: ./tests`, `reporter: html`, no `baseURL`), and `tests/smoke.spec.ts` (`about:blank`).
+- Root `test:e2e` delegates to `e2e` workspace script.
+- CI: `.github/workflows/ci.yml` job `e2e` — Node 20, `npm ci`, `npm exec --workspace=e2e -- playwright install --with-deps`, `npm run test:e2e` (no Docker/API).
+- README: E2E subsection with `npm exec playwright install` and Epic 3 pointer.
+- `.gitignore` already covered Playwright outputs; no changes.
+
 ### Completion Notes List
+
+- `npm run test:e2e`, `npm test`, client/api `npm run lint` all pass locally after `npm install`.
+- Playwright browsers: CI uses `--with-deps` per Playwright Linux guidance; contributors use `npm exec playwright install` per README.
 
 ### File List
 
-_(filled by dev agent)_
+- `e2e/package.json`
+- `e2e/playwright.config.ts`
+- `e2e/tests/smoke.spec.ts`
+- `package.json`
+- `package-lock.json`
+- `README.md`
+- `.github/workflows/ci.yml`
+
+### Review Findings
+
+- [ ] [Review][Patch] README E2E: add a sentence for Linux/WSL contributors to use `npm exec playwright install --with-deps` (or link Playwright install docs) so local installs match CI system-deps expectations — AC #3 documentation polish [README.md]
+
+## Change Log
+
+- 2026-04-09: Story 1.4 — Playwright `e2e/` workspace, minimal smoke spec, root `test:e2e`, README E2E docs, GitHub Actions Playwright job.

@@ -4,7 +4,14 @@ const path = require('node:path')
 const AutoLoad = require('@fastify/autoload')
 
 // Pass --options via CLI arguments in command to enable these options.
-const options = {}
+const options = {
+  ajv: {
+    customOptions: {
+      // Reject unknown JSON keys (additionalProperties: false) instead of stripping them.
+      removeAdditional: false,
+    },
+  },
+}
 
 module.exports = async function (fastify, opts) {
   // Place here your custom code!

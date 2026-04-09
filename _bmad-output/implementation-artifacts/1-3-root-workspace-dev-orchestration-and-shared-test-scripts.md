@@ -1,6 +1,6 @@
 # Story 1.3: Root workspace, dev orchestration, and shared test scripts
 
-Status: review
+Status: done
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -101,13 +101,22 @@ gpt-5.3-codex-low (Amelia / bmad-agent-dev)
 
 ### File List
 
-- `package.json`
+- `package.json` (post-review: exact `concurrently`)
 - `package-lock.json`
-- `.env.example`
-- `README.md`
+- `.env.example` (post-review: env placement comment)
+- `README.md` (post-review: Environment variables section)
 - `_bmad-output/implementation-artifacts/1-3-root-workspace-dev-orchestration-and-shared-test-scripts.md`
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 
 ### Change Log
 
 - 2026-04-09: Implemented Story 1.3 root workspace orchestration, shared test scripts, env examples, and documentation updates; validated with root + package-level tests and lint.
+- 2026-04-09: Code review closed — decision **B** (root-only `.env.example`); pinned `concurrently@9.2.1`; documented package-local `.env` loading in `README.md` and `.env.example`.
+
+### Review Findings
+
+- [x] [Review][Decision] Per-package `.env.example` vs root-only — **Resolved (B):** keep root-only `.env.example`; Dev Notes treated as non-binding for layout.
+
+- [x] [Review][Patch] Pin `concurrently` to an exact version (remove `^`) per story Library / tooling note — `package.json` (pinned `9.2.1`)
+
+- [x] [Review][Patch] Document that Vite reads env from `client/` and the API from `api/` so developers copy relevant lines from root `.env.example` into package-local `.env` as needed — `README.md` + `.env.example`

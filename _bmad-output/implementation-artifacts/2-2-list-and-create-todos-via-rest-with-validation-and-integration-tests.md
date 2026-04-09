@@ -1,6 +1,6 @@
 # Story 2.2: List and create todos via REST with validation and integration tests
 
-Status: ready-for-dev
+Status: review
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -42,32 +42,32 @@ so that **the UI can load and add tasks reliably** (**FR17–FR19**, **FR22**).
 
 ## Tasks / Subtasks
 
-- [ ] **Lock REST prefix and route module** (AC: #1–3)  
-  - [ ] Add **`api/routes/todos.js`** (or **`todos/index.js`** if using nested route folders) matching **existing autoload** layout under `api/routes/` [Source: `api/app.js`, `architecture.md` — Structure Patterns]  
-  - [ ] Register **GET** (list) and **POST** (create) only; defer **PATCH**/**DELETE** to Story 2.3  
-  - [ ] Document chosen prefix in a short comment at top of the route file
+- [x] **Lock REST prefix and route module** (AC: #1–3)  
+  - [x] Add **`api/routes/todos.js`** (or **`todos/index.js`** if using nested route folders) matching **existing autoload** layout under `api/routes/` [Source: `api/app.js`, `architecture.md` — Structure Patterns]  
+  - [x] Register **GET** (list) and **POST** (create) only; defer **PATCH**/**DELETE** to Story 2.3  
+  - [x] Document chosen prefix in a short comment at top of the route file
 
-- [ ] **Wire persistence** (AC: #1–2)  
-  - [ ] Reuse **Drizzle + `todos` table** from Story 2.1 (`api/db/` per architecture); map **snake_case** columns ↔ **camelCase** JSON  
-  - [ ] **GET**: return all todos ordered deterministically (e.g. **`created_at` ASC**); document choice  
-  - [ ] **POST**: insert row, set **`completed`** default **false**, set **`created_at` / `updated_at`** per schema
+- [x] **Wire persistence** (AC: #1–2)  
+  - [x] Reuse **Drizzle + `todos` table** from Story 2.1 (`api/db/` per architecture); map **snake_case** columns ↔ **camelCase** JSON  
+  - [x] **GET**: return all todos ordered deterministically (e.g. **`created_at` ASC**); document choice  
+  - [x] **POST**: insert row, set **`completed`** default **false**, set **`created_at` / `updated_at`** per schema
 
-- [ ] **HTTP boundary validation** (AC: #3)  
-  - [ ] Use **Fastify JSON Schema** on the **POST** body (architecture: JSON Schema at boundary)  
-  - [ ] Define a **reasonable `maxLength`** for **`text`** (PRD: NFR-S1 — pick a concrete number, e.g. 1–10k chars, and keep DB column compatible)  
-  - [ ] Map validation failures to **400** + **`error.code`** (e.g. **`VALIDATION_ERROR`**) + human-readable **`message`**; optional **`details`** for field-level hints
+- [x] **HTTP boundary validation** (AC: #3)  
+  - [x] Use **Fastify JSON Schema** on the **POST** body (architecture: JSON Schema at boundary)  
+  - [x] Define a **reasonable `maxLength`** for **`text`** (PRD: NFR-S1 — pick a concrete number, e.g. 1–10k chars, and keep DB column compatible)  
+  - [x] Map validation failures to **400** + **`error.code`** (e.g. **`VALIDATION_ERROR`**) + human-readable **`message`**; optional **`details`** for field-level hints
 
-- [ ] **Integration tests** (AC: #4)  
-  - [ ] Create **`api/test/integration/`** if missing  
-  - [ ] Add a **test app builder** pattern: build Fastify app with **`DATABASE_PATH`** pointing at a **temp file**, run **migrations** (or documented schema apply) before tests, **unlink/close** after suite if needed  
-  - [ ] Tests: **GET** empty list → `{ todos: [] }`; **POST** valid → **201** or **200** (pick one, stay consistent with later OpenAPI); **GET** returns new row; **POST** invalid → **400** + envelope  
-  - [ ] Use **`fastify.inject`**; assert **status**, **JSON shape**, and **persistence** across sequential calls within a test
+- [x] **Integration tests** (AC: #4)  
+  - [x] Create **`api/test/integration/`** if missing  
+  - [x] Add a **test app builder** pattern: build Fastify app with **`DATABASE_PATH`** pointing at a **temp file**, run **migrations** (or documented schema apply) before tests, **unlink/close** after suite if needed  
+  - [x] Tests: **GET** empty list → `{ todos: [] }`; **POST** valid → **201** or **200** (pick one, stay consistent with later OpenAPI); **GET** returns new row; **POST** invalid → **400** + envelope  
+  - [x] Use **`fastify.inject`**; assert **status**, **JSON shape**, and **persistence** across sequential calls within a test
 
-- [ ] **Logging** (AC: #5)  
-  - [ ] Ensure validation and unexpected paths log appropriately; avoid logging full abusive bodies at info
+- [x] **Logging** (AC: #5)  
+  - [x] Ensure validation and unexpected paths log appropriately; avoid logging full abusive bodies at info
 
-- [ ] **Scripts**  
-  - [ ] Extend **`api/package.json`** so **`npm test`** runs **unit** tests **and** **`api/test/integration/*`** (or add **`test:integration`** and document running both locally). Story **2.4** adds the **dedicated CI job** for API integration tests; until then, local + doc is acceptable per epic split.
+- [x] **Scripts**  
+  - [x] Extend **`api/package.json`** so **`npm test`** runs **unit** tests **and** **`api/test/integration/*`** (or add **`test:integration`** and document running both locally). Story **2.4** adds the **dedicated CI job** for API integration tests; until then, local + doc is acceptable per epic split.
 
 ## Dev Notes
 
@@ -94,7 +94,7 @@ so that **the UI can load and add tasks reliably** (**FR17–FR19**, **FR22**).
 
 | Area | Path |
 |------|------|
-| Routes | `api/routes/todos.js` (or `api/routes/todos/index.js`) |
+| Routes | `api/routes/todos/index.js` (autoload prefix `/todos`; top-level `todos.js` would collide with `root.js` on `GET /`) |
 | DB access | `api/db/*` (from 2.1 — extend with list/insert helpers if useful) |
 | Integration tests | `api/test/integration/todos-list-create.test.js` (name as you prefer) |
 | Test helper | Extend `api/test/helper.js` or add `api/test/integration/setup.js` for DB + build |
@@ -123,14 +123,35 @@ so that **the UI can load and add tasks reliably** (**FR17–FR19**, **FR22**).
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Composer (Cursor agent)
 
 ### Debug Log References
 
+- `@fastify/autoload` does not apply a filename-based prefix for sibling `routes/*.js` files; only **subdirectories** get `dirNameRoutePrefix`. `routes/todos.js` + `routes/root.js` both registered `GET /` → **FST_ERR_DUPLICATED_ROUTE**. Resolved with **`routes/todos/index.js`** → prefix `/todos`.
+
+### Implementation Plan
+
+- `plugins/database.js`: open SQLite, `applyMigrations`, `decorate('db')`, close on shutdown.
+- `plugins/error-envelope.js`: global `setErrorHandler` → `{ error: { code, message, details? } }`; **400** + **warn** for validation; **500** generic body + **error** log.
+- `routes/todos/index.js`: **GET /** → `{ todos }` ordered by `createdAt` ASC; **POST /** JSON Schema `text` 1–10k, **201** + full entity, ISO UTC dates.
+- `test/helper.js`: temp `DATABASE_PATH` + cleanup per test context.
+- Integration: `test/integration/todos-list-create.test.js` — empty list, create+list persistence, empty/missing/maxLength validation.
+
 ### Completion Notes List
+
+- AC1–5 satisfied: `/todos`, camelCase + ISO dates, **201** on create, **400** + envelope, `npm test` includes integration, Pino validation at **warn** without body echo at info.
+- Full suite: `api/npm test` (9 tests) and `api/npm run lint` green.
 
 ### File List
 
----
+- `api/plugins/database.js`
+- `api/plugins/error-envelope.js`
+- `api/routes/todos/index.js`
+- `api/test/helper.js`
+- `api/test/integration/todos-list-create.test.js`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/2-2-list-and-create-todos-via-rest-with-validation-and-integration-tests.md`
 
-**Completion note:** Ultimate context engine analysis completed — comprehensive developer guide created.
+## Change Log
+
+- **2026-04-09:** Story 2.2 implemented — REST list/create at `/todos`, Drizzle persistence, JSON Schema validation, error envelope plugin, integration tests, test helper temp DB.

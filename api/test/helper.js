@@ -4,34 +4,39 @@
 // between our tests.
 
 const { build: buildApplication } = require('fastify-cli/helper')
+const fs = require('node:fs')
+const os = require('node:os')
 const path = require('node:path')
 const AppPath = path.join(__dirname, '..', 'app.js')
 
 // Fill in this config with all the configurations
 // needed for testing the application
-function config () {
+function config() {
   return {
-    skipOverride: true // Register our application with fastify-plugin
+    skipOverride: true, // Register our application with fastify-plugin
   }
 }
 
 // automatically build and tear down our instance
-async function build (t) {
-  // you can set all the options supported by the fastify CLI command
-  const argv = [AppPath]
+async function build(t) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bmad-api-test-'))
+  const dbPath = path.join(dir, 'test.db')
+  const prevDb = process.env.DATABASE_PATH
+  process.env.DATABASE_PATH = dbPath
 
-  // fastify-plugin ensures that all decorators
-  // are exposed for testing purposes, this is
-  // different from the production setup
+  const argv = [AppPath]
   const app = await buildApplication(argv, config())
 
-  // close the app after we are done
-  t.after(() => app.close())
+  t.after(async () => {
+    await app.close()
+    process.env.DATABASE_PATH = prevDb
+    fs.rmSync(dir, { recursive: true, force: true })
+  })
 
   return app
 }
 
 module.exports = {
   config,
-  build
+  build,
 }

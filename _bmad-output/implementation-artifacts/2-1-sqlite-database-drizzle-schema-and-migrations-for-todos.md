@@ -1,6 +1,6 @@
 # Story 2.1: SQLite database, Drizzle schema, and migrations for `todos`
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -111,10 +111,11 @@ Composer (Cursor agent)
 - **NFR-SC1:** Documented in schema JSDoc (nullable `user_id` / tenant + index later; single PK `id`).
 - **Tests:** `test/db/migrations.test.js` — temp DB, `applyMigrations`, `PRAGMA table_info`, insert row.
 - **No** HTTP todo routes, `/health`, or `/ready`.
+- **Post-review:** `resolveDatabasePath` relative to `api/`; `migrate.js` + `dotenv` for optional `api/.env`.
 
 ### File List
 
-- `api/package.json`
+- `api/package.json` (incl. `dotenv` for `db:migrate` `.env` load)
 - `package-lock.json` (root workspace lockfile)
 - `api/drizzle.config.js`
 - `api/db/schema.js`
@@ -130,10 +131,17 @@ Composer (Cursor agent)
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - `_bmad-output/implementation-artifacts/2-1-sqlite-database-drizzle-schema-and-migrations-for-todos.md`
 
+### Review Findings
+
+- [x] [Review][Patch] Align relative `DATABASE_PATH` resolution with `drizzle.config.js` — [api/db/index.js:15] — fixed (resolve against `api/` root).
+- [x] [Review][Patch] Fix README vs migrate script: `.env` is not loaded by `node scripts/migrate.js` — [api/README.md:17] [api/scripts/migrate.js] — fixed (`dotenv` + conditional load in `migrate.js`; README updated).
+- [x] [Review][Defer] Root CI does not run `npm test` (api workspace / migration test); E2E-only job — deferred, pre-existing [.github/workflows/ci.yml]
+
 ## Change Log
 
 - **2026-04-09:** Story 2.1 — Drizzle + SQLite schema, versioned migration, `db:migrate` / `db:generate`, `db/index.js`, README, migration smoke test; sprint status → review.
+- **2026-04-09:** Code review — `resolveDatabasePath` uses `api/` root for relative paths; `migrate.js` loads optional `api/.env` via `dotenv`; README aligned; story → done.
 
 ---
 
-**Story completion status:** Ready for code review — all tasks complete; `npm test` (root) and `npm run lint` (api) pass.
+**Story completion status:** Done — review patches applied; `npm test` (root) and `npm run lint` (api) pass.

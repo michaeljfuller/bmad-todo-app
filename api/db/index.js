@@ -12,7 +12,8 @@ function resolveDatabasePath() {
   if (!p) {
     throw new Error('DATABASE_PATH is required (see api/.env.example)')
   }
-  return path.isAbsolute(p) ? p : path.join(process.cwd(), p)
+  const apiRoot = path.join(__dirname, '..')
+  return path.isAbsolute(p) ? p : path.join(apiRoot, p)
 }
 
 function openSqlite() {

@@ -14,7 +14,7 @@ Bootstrapped with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli) / cre
 
 1. Copy `.env.example` to `.env` if you have not already.
 2. Ensure the parent directory for `DATABASE_PATH` exists, or let the migrator create it (`db/index.js` / `scripts/migrate.js` call `fs.mkdirSync(..., { recursive: true })` on the DB file’s parent).
-3. From **`api/`**, with `DATABASE_PATH` set (or inherited from `.env` — run from this directory so relative paths resolve):
+3. From **`api/`**, run migrations. `scripts/migrate.js` loads **`api/.env`** when that file exists; otherwise set `DATABASE_PATH` in the environment. Relative `DATABASE_PATH` values resolve against the **`api/`** directory (aligned with `drizzle.config.js`), not the shell’s current working directory.
 
    ```bash
    npm run db:migrate

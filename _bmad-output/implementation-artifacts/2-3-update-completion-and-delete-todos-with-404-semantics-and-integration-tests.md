@@ -1,6 +1,6 @@
 # Story 2.3: Update completion and delete todos with 404 semantics and integration tests
 
-Status: review
+Status: done
 
 <!-- Ultimate context engine analysis completed — comprehensive developer guide created. -->
 

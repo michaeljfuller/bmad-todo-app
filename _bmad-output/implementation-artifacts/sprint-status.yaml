@@ -1,0 +1,75 @@
+# generated: 2026-04-09T02:06:36Z
+# last_updated: 2026-04-09T02:06:36Z
+# project: bmad-todo-app
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: "2026-04-09T02:06:36Z"
+last_updated: "2026-04-09T02:06:36Z"
+project: bmad-todo-app
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  epic-1: backlog
+  1-1-set-up-initial-client-and-api-from-starter-templates: backlog
+  1-2-root-gitignore-and-repository-hygiene: backlog
+  1-3-root-workspace-dev-orchestration-and-shared-test-scripts: backlog
+  1-4-playwright-e2e-scaffold-and-green-ci-job: backlog
+  1-5-readme-and-fresh-clone-bootstrap: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-sqlite-database-drizzle-schema-and-migrations-for-todos: backlog
+  2-2-list-and-create-todos-via-rest-with-validation-and-integration-tests: backlog
+  2-3-update-completion-and-delete-todos-with-404-semantics-and-integration-tests: backlog
+  2-4-openapi-contract-cors-configuration-and-ci-job-for-api-integration-tests: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-tailwind-design-tokens-and-typography-baseline: backlog
+  3-2-api-client-tanstack-query-and-list-loading-with-loading-error-retry: backlog
+  3-3-todoapp-shell-direction-9-layout-and-empty-state: backlog
+  3-4-add-todo-flow-with-double-submit-protection: backlog
+  3-5-todo-rows-complete-uncomplete-delete-metadata-and-styling: backlog
+  3-6-responsive-layout-keyboard-flows-and-motion-preferences: backlog
+  3-7-end-to-end-trust-reload-server-alignment-and-error-journeys: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-liveness-and-readiness-http-endpoints: backlog
+  4-2-multi-stage-dockerfiles-for-api-and-static-web: backlog
+  4-3-docker-compose-stack-with-healthchecks-and-sqlite-volume: backlog
+  4-4-container-ci-and-documentation-for-deploy-shaped-workflows: backlog
+  epic-4-retrospective: optional

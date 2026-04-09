@@ -1,4 +1,5 @@
 # AI Usage
+Created using Cursor's Auto mode throughout.
 
 ## Agent Usage  
 > Which tasks were completed with AI assistance? What prompts worked best?  

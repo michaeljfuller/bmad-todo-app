@@ -1,0 +1,3 @@
+# Demo / training app — allow all crawlers (not a production policy).
+User-agent: *
+Allow: /

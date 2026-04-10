@@ -8,11 +8,14 @@ test.describe('todo list load (AC#8)', () => {
     await expect(
       page.getByRole('heading', { name: /todo app/i }),
     ).toBeVisible();
+    // After load: empty DB shows todo-empty-state; non-empty DB shows todo-list rows.
+    const empty = page.getByTestId('todo-empty-state');
     const list = page.getByTestId('todo-list');
-    await expect(list).toBeVisible({ timeout: 60_000 });
-    // AC#8: after load, either empty copy or at least one row (non-empty DB).
+    await expect(empty.or(list)).toBeVisible({ timeout: 60_000 });
     await expect(
-      list.getByText(/no todos yet/i).or(list.locator('li').first()),
+      empty
+        .getByText(/nothing here yet/i)
+        .or(list.locator('li').first()),
     ).toBeVisible();
   });
 });

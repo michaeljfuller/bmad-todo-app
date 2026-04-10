@@ -1,6 +1,6 @@
 # Story 3.3: TodoApp shell, Direction 9 layout, and empty state
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -26,17 +26,17 @@ so that **I can scan tasks and capture new ones with minimal thumb/pointer trave
 
 ## Tasks / Subtasks
 
-- [ ] **Structure** (AC: #1, #3)
-  - [ ] Add **`TodoApp.tsx`** (and wire from **`App.tsx`** or **`main.tsx`** as the single todo surface) per Architecture tree: `client/src/todos/TodoApp.tsx`.
-  - [ ] Implement **flex column** root: full viewport height (`min-h-screen` or `h-dvh`), inner column **`flex flex-col flex-1 min-h-0`** pattern so the **list panel** scrolls.
-  - [ ] **`TodoList.tsx`** — renders **children** or **empty state**; middle wrapper gets **`flex-1 min-h-0 overflow-y-auto`** (or equivalent) for scroll containment.
-  - [ ] **`AddTodoForm.tsx`** — shell at bottom with **`border-t`** using **panel/border tokens** from 3.1; **Story 3.4** adds full submit behavior — for 3.3, include labeled input + primary button **or** clearly disabled placeholder **only if** AC #2 “composer stays visible” is still met (prefer **real visible controls** even if mutation arrives in 3.4).
-- [ ] **Empty state** (AC: #2)
-  - [ ] When `isSuccess && todos.length === 0`, render concise **headline + one supporting line** inside the scrollable list region (not below the composer).
-  - [ ] Do **not** treat empty as **error**; no red banner unless the **query failed** (that path is 3.2).
-- [ ] **Tests** (AC: #4, #5)
-  - [ ] **`TodoApp.test.tsx`** (or co-located): empty success path with **mocked `useQuery`** return `{ data: { todos: [] }, isSuccess: true, isPending: false }` (align with actual **API response shape** `{ todos: [...] }` from Epic 2).
-  - [ ] **Playwright**: `e2e/tests/**` spec — empty DB scenario; document **base URL** / API dependency in spec comment or README if needed.
+- [x] **Structure** (AC: #1, #3)
+  - [x] Add **`TodoApp.tsx`** (and wire from **`App.tsx`** or **`main.tsx`** as the single todo surface) per Architecture tree: `client/src/todos/TodoApp.tsx`.
+  - [x] Implement **flex column** root: full viewport height (`min-h-screen` or `h-dvh`), inner column **`flex flex-col flex-1 min-h-0`** pattern so the **list panel** scrolls.
+  - [x] **`TodoList.tsx`** — renders **children** or **empty state**; middle wrapper gets **`flex-1 min-h-0 overflow-y-auto`** (or equivalent) for scroll containment.
+  - [x] **`AddTodoForm.tsx`** — shell at bottom with **`border-t`** using **panel/border tokens** from 3.1; **Story 3.4** adds full submit behavior — for 3.3, include labeled input + primary button **or** clearly disabled placeholder **only if** AC #2 “composer stays visible” is still met (prefer **real visible controls** even if mutation arrives in 3.4).
+- [x] **Empty state** (AC: #2)
+  - [x] When `isSuccess && todos.length === 0`, render concise **headline + one supporting line** inside the scrollable list region (not below the composer).
+  - [x] Do **not** treat empty as **error**; no red banner unless the **query failed** (that path is 3.2).
+- [x] **Tests** (AC: #4, #5)
+  - [x] **`TodoApp.test.tsx`** (or co-located): empty success path with **mocked `useQuery`** return `{ data: { todos: [] }, isSuccess: true, isPending: false }` (align with actual **API response shape** `{ todos: [...] }` from Epic 2).
+  - [x] **Playwright**: `e2e/tests/**` spec — empty DB scenario; document **base URL** / API dependency in spec comment or README if needed.
 
 ## Dev Notes
 
@@ -93,13 +93,36 @@ so that **I can scan tasks and capture new ones with minimal thumb/pointer trave
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Composer (Cursor agent)
 
 ### Debug Log References
 
+- E2E `webServer` failed until `TodoApp.test.tsx` mock used `as unknown as` — `tsc -b` includes `*.test.tsx` in `tsconfig.app.json`.
+
 ### Completion Notes List
 
+- **AC1–AC3:** `TodoApp` Direction 9 column: `h1` → `TodoList` scroll region (`flex-1 min-h-0 overflow-y-auto`, `data-testid="todo-list-scroll"`) → `AddTodoForm` with `border-t border-fg-primary/15`. Reused `useTodosQuery`, `QueryErrorBanner`, and loading skeletons from 3.2 (moved from removed `TodoListPanel`).
+- **AC2:** Empty success: `role="status"` + headline/supporting line inside scroll region; composer always visible with labeled input + Add (submit `preventDefault` until 3.4).
+- **AC4:** `TodoApp.test.tsx` mocks `useTodosQuery` with `data: []` (client normalizes `{ todos }` to `Todo[]` in `fetchTodos`); asserts layout `testid`s, DOM order, scroll classes, empty copy, form controls.
+- **AC5:** `e2e/tests/todo-app-empty-shell.spec.ts` + comment block for `baseURL` / fresh DB; `todo-list-load.spec.ts` updated for new empty markers.
+
 ### File List
+
+- `client/src/App.tsx`
+- `client/src/App.test.tsx`
+- `client/src/todos/AddTodoForm.tsx`
+- `client/src/todos/TodoApp.tsx`
+- `client/src/todos/TodoApp.test.tsx`
+- `client/src/todos/TodoList.tsx`
+- `client/src/todos/TodoList.test.tsx`
+- `client/src/todos/TodoListPanel.tsx` (removed)
+- `client/src/todos/TodoListPanel.test.tsx` (removed)
+- `e2e/tests/todo-app-empty-shell.spec.ts`
+- `e2e/tests/todo-list-load.spec.ts`
+
+## Change Log
+
+- 2026-04-10: Story 3.3 — TodoApp shell (Direction 9), empty state, AddTodoForm shell, Vitest + Playwright coverage; replaced `TodoListPanel` with `TodoList` + `TodoApp`.
 
 ---
 

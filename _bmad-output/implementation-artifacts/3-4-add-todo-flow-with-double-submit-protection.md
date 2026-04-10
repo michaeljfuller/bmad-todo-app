@@ -1,6 +1,6 @@
 # Story 3.4: Add todo flow with double-submit protection
 
-Status: review
+Status: done
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -142,6 +142,7 @@ Composer (Cursor agent)
 - **`AddTodoForm.test.tsx`**: pending disables controls, invalidation spy, double **`submit`** → one POST, mapped 400 error copy.
 - **`e2e/tests/add-todo.spec.ts`**: type unique label → Add → assert **`listitem`** (stack documented in file comment; same as 3.3 specs).
 - Local **`npm run test:e2e`** failed only because **`127.0.0.1:3000`** was already in use (dev server); **`npm run build --workspace client`** passes after **`FormEvent`** type-only import fix.
+- **Code review (2026-04-10):** Adversarial + edge-case + AC audit — no `decision-needed`, `patch`, or `defer` items; regression suite green (`npm test --workspaces`). Story marked **done**.
 
 ### File List
 
@@ -155,3 +156,4 @@ Composer (Cursor agent)
 ## Change Log
 
 - 2026-04-10: Story 3.4 — add todo API client, create mutation, form wiring, Vitest coverage, Playwright add-todo spec.
+- 2026-04-10: Code review — clean pass; status **review** → **done**; sprint-status synced.

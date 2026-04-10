@@ -1,6 +1,6 @@
 # Story 3.3: TodoApp shell, Direction 9 layout, and empty state
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -123,6 +123,13 @@ Composer (Cursor agent)
 ## Change Log
 
 - 2026-04-10: Story 3.3 — TodoApp shell (Direction 9), empty state, AddTodoForm shell, Vitest + Playwright coverage; replaced `TodoListPanel` with `TodoList` + `TodoApp`.
+- 2026-04-10: Code review complete — story marked **done**; optional `AI Usage.md` typo patch declined by author.
+
+### Review Findings
+
+- [x] [Review][Defer] Align story Tasks example with actual `useTodosQuery` mock (`data: []` vs documented `{ data: { todos: [] } }` / `useQuery`) — story file Tasks — deferred, pre-existing doc drift
+- [x] [Review][Defer] Soften brittle `layout.children` index assertions in empty-layout test — `client/src/todos/TodoApp.test.tsx` — deferred, pre-existing
+- [x] [Review][Defer] Revisit `as unknown as` mock cast when Vitest/TS mock typing improves — `client/src/todos/TodoApp.test.tsx` — deferred, pre-existing (see Dev Agent Record)
 
 ---
 

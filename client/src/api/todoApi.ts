@@ -41,3 +41,39 @@ export async function fetchTodos(): Promise<Todo[]> {
 
   return todos as Todo[]
 }
+
+function isTodoShape(value: unknown): value is Todo {
+  if (!value || typeof value !== 'object') return false
+  const o = value as Record<string, unknown>
+  return (
+    typeof o.id === 'number' &&
+    typeof o.text === 'string' &&
+    typeof o.completed === 'boolean' &&
+    typeof o.createdAt === 'string' &&
+    typeof o.updatedAt === 'string'
+  )
+}
+
+export async function createTodo(input: { text: string }): Promise<Todo> {
+  const base = resolveApiBaseUrl()
+  const res = await fetch(`${base}/todos`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    credentials: 'omit',
+    body: JSON.stringify({ text: input.text }),
+  })
+
+  if (!res.ok) {
+    const userMessage = await mapApiError(res)
+    throw new Error(userMessage)
+  }
+
+  const body: unknown = await res.json()
+  if (!isTodoShape(body)) {
+    throw new Error('The server returned an unexpected response.')
+  }
+  return body
+}

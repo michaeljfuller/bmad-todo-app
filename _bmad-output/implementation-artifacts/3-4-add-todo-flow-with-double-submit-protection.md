@@ -1,6 +1,6 @@
 # Story 3.4: Add todo flow with double-submit protection
 
-Status: ready-for-dev
+Status: review
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -46,29 +46,29 @@ There is **no** implementation-artifact file yet for **3-3** in the repo; treat 
 
 ## Tasks / Subtasks
 
-- [ ] **API client: create** (AC: #3–4)  
-  - [ ] Add **`createTodo({ text: string })`** (or extend existing **`todoApi`**) calling **`POST ${VITE_API_BASE_URL}/todos`** with body **`{ text }`**  
-  - [ ] Expect **201** and parse the **Todo** JSON body (full entity: **`id`**, **`text`**, **`completed`**, **`createdAt`**, **`updatedAt`**)—matches **`api/routes/todos/index.js`** and OpenAPI **`Todo`** schema [Source: `api/schemas/todos-contract.js`]  
-  - [ ] On non-OK, parse **`{ error: { code, message, details? } }`** and throw or return a typed error for **`mapApiError`**
+- [x] **API client: create** (AC: #3–4)  
+  - [x] Add **`createTodo({ text: string })`** (or extend existing **`todoApi`**) calling **`POST ${VITE_API_BASE_URL}/todos`** with body **`{ text }`**  
+  - [x] Expect **201** and parse the **Todo** JSON body (full entity: **`id`**, **`text`**, **`completed`**, **`createdAt`**, **`updatedAt`**)—matches **`api/routes/todos/index.js`** and OpenAPI **`Todo`** schema [Source: `api/schemas/todos-contract.js`]  
+  - [x] On non-OK, parse **`{ error: { code, message, details? } }`** and throw or return a typed error for **`mapApiError`**
 
-- [ ] **TanStack Query mutation** (AC: #2–3)  
-  - [ ] **`useMutation`** for create with stable **`mutationKey`** (e.g. **`['todos', 'create']`**) aligned with architecture  
-  - [ ] **`onSuccess`**: invalidate **`['todos']`** (or update cache)—**no** parallel **`useState`** list as source of truth  
-  - [ ] **`isPending`** (v5) drives **disabled** state; consider **`mutate`** vs **`mutateAsync`** for error handling in the form
+- [x] **TanStack Query mutation** (AC: #2–3)  
+  - [x] **`useMutation`** for create with stable **`mutationKey`** (e.g. **`['todos', 'create']`**) aligned with architecture  
+  - [x] **`onSuccess`**: invalidate **`['todos']`** (or update cache)—**no** parallel **`useState`** list as source of truth  
+  - [x] **`isPending`** (v5) drives **disabled** state; consider **`mutate`** vs **`mutateAsync`** for error handling in the form
 
-- [ ] **`AddTodoForm` wiring** (AC: #1–4)  
-  - [ ] Controlled or uncontrolled input per existing 3.3 code; **clear input on success** (optional but matches “frictionless capture” in UX spec)  
-  - [ ] **`onSubmit`**: `preventDefault`; if **`isPending`** return early; else trigger mutation  
-  - [ ] **Enter** in text field submits (native **`type="submit"`** + single form, or **`onKeyDown`**) per **UX-DR12**  
-  - [ ] Inline error state for mutation errors; ensure screen readers get **`aria-live`** or associated **`aria-describedby`** if you use a live region
+- [x] **`AddTodoForm` wiring** (AC: #1–4)  
+  - [x] Controlled or uncontrolled input per existing 3.3 code; **clear input on success** (optional but matches “frictionless capture” in UX spec)  
+  - [x] **`onSubmit`**: `preventDefault`; if **`isPending`** return early; else trigger mutation  
+  - [x] **Enter** in text field submits (native **`type="submit"`** + single form, or **`onKeyDown`**) per **UX-DR12**  
+  - [x] Inline error state for mutation errors; ensure screen readers get **`aria-live`** or associated **`aria-describedby`** if you use a live region
 
-- [ ] **Tests** (AC: #5)  
-  - [ ] Co-locate **`AddTodoForm.test.tsx`** (or project convention from 3.2/3.3)  
-  - [ ] Assert: after submit, **button/input** disabled while promise pending; re-enabled after settle  
-  - [ ] Assert: success path triggers invalidation or list update (spy on **`queryClient.invalidateQueries`** or assert rendered row)
+- [x] **Tests** (AC: #5)  
+  - [x] Co-locate **`AddTodoForm.test.tsx`** (or project convention from 3.2/3.3)  
+  - [x] Assert: after submit, **button/input** disabled while promise pending; re-enabled after settle  
+  - [x] Assert: success path triggers invalidation or list update (spy on **`queryClient.invalidateQueries`** or assert rendered row)
 
-- [ ] **E2E** (AC: #6)  
-  - [ ] Extend **`e2e/tests/`** (replace or augment **`smoke.spec.ts`** pattern) with **add todo** flow; document **`BASE_URL`** / API dependency in **`README`** or **`e2e/README`** if needed
+- [x] **E2E** (AC: #6)  
+  - [x] Extend **`e2e/tests/`** (replace or augment **`smoke.spec.ts`** pattern) with **add todo** flow; document **`BASE_URL`** / API dependency in **`README`** or **`e2e/README`** if needed
 
 ## Dev Notes
 
@@ -130,10 +130,28 @@ There is **no** implementation-artifact file yet for **3-3** in the repo; treat 
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Composer (Cursor agent)
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- Implemented **`createTodo`** in **`client/src/api/todoApi.ts`** (POST, 201 body validation, **`mapApiError`** on failure).
+- Added **`useCreateTodoMutation`** (`mutationKey` **`['todos','create']`**, **`retry: false`**, **`invalidateQueries`** on **`TODOS_QUERY_KEY`**).
+- Wired **`AddTodoForm`**: controlled input, **`isPending`** + ref guard against double submit, teal primary + disabled opacity/cursor, inline **`role="alert"`** + **`aria-describedby`** on validation errors, clear text on success.
+- **`AddTodoForm.test.tsx`**: pending disables controls, invalidation spy, double **`submit`** → one POST, mapped 400 error copy.
+- **`e2e/tests/add-todo.spec.ts`**: type unique label → Add → assert **`listitem`** (stack documented in file comment; same as 3.3 specs).
+- Local **`npm run test:e2e`** failed only because **`127.0.0.1:3000`** was already in use (dev server); **`npm run build --workspace client`** passes after **`FormEvent`** type-only import fix.
+
 ### File List
+
+- `client/src/api/todoApi.ts`
+- `client/src/todos/useCreateTodoMutation.ts`
+- `client/src/todos/AddTodoForm.tsx`
+- `client/src/todos/AddTodoForm.test.tsx`
+- `e2e/tests/add-todo.spec.ts`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+
+## Change Log
+
+- 2026-04-10: Story 3.4 — add todo API client, create mutation, form wiring, Vitest coverage, Playwright add-todo spec.

@@ -10,6 +10,9 @@ test.describe('todo list load (AC#8)', () => {
     ).toBeVisible();
     const list = page.getByTestId('todo-list');
     await expect(list).toBeVisible({ timeout: 60_000 });
-    await expect(list.getByText(/no todos yet/i)).toBeVisible();
+    // AC#8: after load, either empty copy or at least one row (non-empty DB).
+    await expect(
+      list.getByText(/no todos yet/i).or(list.locator('li').first()),
+    ).toBeVisible();
   });
 });

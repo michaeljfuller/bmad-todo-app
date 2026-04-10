@@ -1,6 +1,6 @@
 # Story 3.2: API client, TanStack Query, and list loading with loading/error/retry
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -43,6 +43,10 @@ so that **I never stare at a blank void** and can **retry** when something fails
   - [x] Update **`e2e/playwright.config.ts`** and/or root **`package.json`** scripts if you add **`webServer`** to automate API+client startup for CI; otherwise document manual/CI steps in **`README.md`**.
 - [x] **Regression** (AC: all)
   - [x] Update **`client/src/App.test.tsx`** (or replace) so root tests match the new app entry — **no** stale “Get started”-only assertion.
+
+### Review Findings
+
+- [x] [Review][Patch] E2E only asserted the empty-list copy after load — brittle vs AC#8 (“rows **or** empty”). Broadened assertion to **`no todos yet` OR first list row** in **`e2e/tests/todo-list-load.spec.ts`** (code review 2026-04-10).
 
 ## Dev Notes
 
@@ -117,6 +121,7 @@ Composer (Cursor agent)
 - **AC6:** `mapApiError.ts` centralizes user-facing strings; `mapApiError.test.ts` covers 5xx / codes / fallbacks.
 - **AC7:** `TodoListPanel.test.tsx` (pending fetch + error→retry→empty list); `App.test.tsx` uses `QueryClientProvider` + mock fetch.
 - **AC8:** `scripts/e2e-dev-stack.sh` + `webServer` in Playwright; client on **5199**, API **3000**, CI **`DATABASE_PATH`**; `README.md` documents orchestration.
+- **Code review (2026-04-10):** E2E list-load spec updated so the happy path accepts either empty copy or populated rows (AC#8).
 
 ### File List
 
@@ -146,6 +151,7 @@ Composer (Cursor agent)
 ## Change Log
 
 - 2026-04-10: Story 3.2 — TanStack Query list load, error mapping, loading/error/retry UI, Vitest coverage, Playwright E2E stack (preview client) + README/CI env.
+- 2026-04-10: Code review — E2E `todo-list-load` assertion aligned with AC#8 (empty or rows); story marked **done**.
 
 ---
 

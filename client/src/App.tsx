@@ -1,4 +1,4 @@
-import { DesignSurfaceSample } from './components/DesignSurfaceSample'
+import { TodoListPanel } from './todos/TodoListPanel'
 
 function App() {
   return (
@@ -9,24 +9,11 @@ function App() {
             Todo app
           </h1>
           <p className="mt-2 text-fg-secondary leading-relaxed">
-            Visual baseline placeholder. List and data loading ship in later
-            stories.
+            Your list loads from the API. Retry if something goes wrong.
           </p>
         </header>
 
-        <DesignSurfaceSample />
-
-        <div className="flex flex-col gap-3">
-          <button
-            type="button"
-            className="inline-flex w-fit rounded-md bg-accent-primary px-4 py-2 text-sm font-medium text-on-accent focus-visible:ring-2 focus-visible:ring-fg-primary focus-visible:ring-offset-2 focus-visible:ring-offset-accent-primary focus-visible:outline-none"
-          >
-            Primary action
-          </button>
-          <p className="rounded-md border border-fg-error/40 bg-surface-error px-3 py-2 text-sm text-fg-error">
-            Error message preview
-          </p>
-        </div>
+        <TodoListPanel />
       </main>
     </div>
   )

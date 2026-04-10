@@ -1,6 +1,6 @@
 # Story 3.2: API client, TanStack Query, and list loading with loading/error/retry
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -27,22 +27,26 @@ so that **I never stare at a blank void** and can **retry** when something fails
 
 ## Tasks / Subtasks
 
-- [ ] **Dependencies** (AC: #2, #3)
-  - [ ] Add **`@tanstack/react-query@^5`** to **`client/package.json`**; run install from repo root per workspaces.
-- [ ] **API surface** (AC: #1, #2, #6)
-  - [ ] Add **`client/src/api/todoApi.ts`** (or equivalent): **`fetchTodos()`** building URL from **`import.meta.env.VITE_API_BASE_URL`**, **`GET /todos`**, parse **`{ todos }`**, export a **`Todo`** **TypeScript** type matching the API ([Source: `api/schemas/todos-contract.js` / OpenAPI]).
-  - [ ] Add **`client/src/api/mapApiError.ts`**: parse JSON error body when present; map to a **`userMessage`** string; never surface **`error.message`** from the server verbatim if it looks internal — prefer status-based fallbacks for **5xx** ([Source: architecture — Error format]).
-- [ ] **Query + UI** (AC: #2–#5)
-  - [ ] Wrap app with **`QueryClientProvider`** in **`main.tsx`**.
-  - [ ] Implement **`useTodosQuery()`** (e.g. under **`client/src/todos/`** or **`client/src/hooks/`**) with **`queryKey: ['todos']`** and **`queryFn`** calling **`fetchTodos`**.
-  - [ ] Replace or narrow the Vite starter **`App.tsx`** to the todo shell needed for this story: **title/heading**, **list region** with loading / error / success branches, **`QueryErrorBanner`** with **Retry**.
-- [ ] **Tests** (AC: #7)
-  - [ ] Component/integration-style tests for loading and error+retry (mock **`global.fetch`** or use MSW if already introduced — **do not** add MSW unless the team prefers it; **`fetch` mock is sufficient**).
-- [ ] **E2E** (AC: #8)
-  - [ ] New Playwright spec: navigate to client **`baseURL`**, assert list area eventually shows **either** rows from API **or** empty list after successful load (use **`data-testid`** or roles for stability).
-  - [ ] Update **`e2e/playwright.config.ts`** and/or root **`package.json`** scripts if you add **`webServer`** to automate API+client startup for CI; otherwise document manual/CI steps in **`README.md`**.
-- [ ] **Regression** (AC: all)
-  - [ ] Update **`client/src/App.test.tsx`** (or replace) so root tests match the new app entry — **no** stale “Get started”-only assertion.
+- [x] **Dependencies** (AC: #2, #3)
+  - [x] Add **`@tanstack/react-query@^5`** to **`client/package.json`**; run install from repo root per workspaces.
+- [x] **API surface** (AC: #1, #2, #6)
+  - [x] Add **`client/src/api/todoApi.ts`** (or equivalent): **`fetchTodos()`** building URL from **`import.meta.env.VITE_API_BASE_URL`**, **`GET /todos`**, parse **`{ todos }`**, export a **`Todo`** **TypeScript** type matching the API ([Source: `api/schemas/todos-contract.js` / OpenAPI]).
+  - [x] Add **`client/src/api/mapApiError.ts`**: parse JSON error body when present; map to a **`userMessage`** string; never surface **`error.message`** from the server verbatim if it looks internal — prefer status-based fallbacks for **5xx** ([Source: architecture — Error format]).
+- [x] **Query + UI** (AC: #2–#5)
+  - [x] Wrap app with **`QueryClientProvider`** in **`main.tsx`**.
+  - [x] Implement **`useTodosQuery()`** (e.g. under **`client/src/todos/`** or **`client/src/hooks/`**) with **`queryKey: ['todos']`** and **`queryFn`** calling **`fetchTodos`**.
+  - [x] Replace or narrow the Vite starter **`App.tsx`** to the todo shell needed for this story: **title/heading**, **list region** with loading / error / success branches, **`QueryErrorBanner`** with **Retry**.
+- [x] **Tests** (AC: #7)
+  - [x] Component/integration-style tests for loading and error+retry (mock **`global.fetch`** or use MSW if already introduced — **do not** add MSW unless the team prefers it; **`fetch` mock is sufficient**).
+- [x] **E2E** (AC: #8)
+  - [x] New Playwright spec: navigate to client **`baseURL`**, assert list area eventually shows **either** rows from API **or** empty list after successful load (use **`data-testid`** or roles for stability).
+  - [x] Update **`e2e/playwright.config.ts`** and/or root **`package.json`** scripts if you add **`webServer`** to automate API+client startup for CI; otherwise document manual/CI steps in **`README.md`**.
+- [x] **Regression** (AC: all)
+  - [x] Update **`client/src/App.test.tsx`** (or replace) so root tests match the new app entry — **no** stale “Get started”-only assertion.
+
+### Review Findings
+
+- [x] [Review][Patch] E2E only asserted the empty-list copy after load — brittle vs AC#8 (“rows **or** empty”). Broadened assertion to **`no todos yet` OR first list row** in **`e2e/tests/todo-list-load.spec.ts`** (code review 2026-04-10).
 
 ## Dev Notes
 
@@ -104,15 +108,50 @@ Match existing **PascalCase** components / **camelCase** modules ([Source: `proj
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Composer (Cursor agent)
 
 ### Debug Log References
 
+- Playwright + Vite dev showed **`504 (Outdated Optimize Dep)`** and empty **`#root`**; E2E stack switched to **`vite preview`** after **`npm run build --workspace client`** with **`VITE_API_BASE_URL`** set for a stable client.
+
 ### Completion Notes List
+
+- **AC1–AC3:** `fetchTodos` + `useTodosQuery` (`queryKey: ['todos']`); `QueryClientProvider` in `main.tsx` with `staleTime: 0`, query `retry: 1`.
+- **AC4–AC5:** `TodoListPanel` — loading copy + skeletons; `QueryErrorBanner` + `refetch` Retry; success lists with `data-testid="todo-list"`.
+- **AC6:** `mapApiError.ts` centralizes user-facing strings; `mapApiError.test.ts` covers 5xx / codes / fallbacks.
+- **AC7:** `TodoListPanel.test.tsx` (pending fetch + error→retry→empty list); `App.test.tsx` uses `QueryClientProvider` + mock fetch.
+- **AC8:** `scripts/e2e-dev-stack.sh` + `webServer` in Playwright; client on **5199**, API **3000**, CI **`DATABASE_PATH`**; `README.md` documents orchestration.
+- **Code review (2026-04-10):** E2E list-load spec updated so the happy path accepts either empty copy or populated rows (AC#8).
 
 ### File List
 
-_(filled by dev agent on completion)_
+- `client/package.json`
+- `client/.env.example`
+- `client/vite.config.ts`
+- `client/src/main.tsx`
+- `client/src/App.tsx`
+- `client/src/App.test.tsx`
+- `client/src/api/todoApi.ts`
+- `client/src/api/mapApiError.ts`
+- `client/src/api/mapApiError.test.ts`
+- `client/src/todos/useTodosQuery.ts`
+- `client/src/todos/QueryErrorBanner.tsx`
+- `client/src/todos/TodoListPanel.tsx`
+- `client/src/todos/TodoListPanel.test.tsx`
+- `e2e/playwright.config.ts`
+- `e2e/tests/todo-list-load.spec.ts`
+- `package.json`
+- `package-lock.json`
+- `scripts/e2e-dev-stack.sh`
+- `README.md`
+- `.github/workflows/ci.yml`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/3-2-api-client-tanstack-query-and-list-loading-with-loading-error-retry.md`
+
+## Change Log
+
+- 2026-04-10: Story 3.2 — TanStack Query list load, error mapping, loading/error/retry UI, Vitest coverage, Playwright E2E stack (preview client) + README/CI env.
+- 2026-04-10: Code review — E2E `todo-list-load` assertion aligned with AC#8 (empty or rows); story marked **done**.
 
 ---
 

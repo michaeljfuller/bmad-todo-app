@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { TodoListPanel } from './TodoListPanel'
+import { TodoList } from './TodoList'
 
 function renderWithClient(ui: ReactElement) {
   const client = new QueryClient({
@@ -16,7 +16,7 @@ function renderWithClient(ui: ReactElement) {
   }
 }
 
-describe('TodoListPanel', () => {
+describe('TodoList', () => {
   const originalFetch = globalThis.fetch
 
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe('TodoListPanel', () => {
       () => new Promise<Response>(() => {}),
     )
 
-    renderWithClient(<TodoListPanel />)
+    renderWithClient(<TodoList />)
 
     expect(screen.getByText('Loading todos…')).toBeInTheDocument()
     expect(screen.getByLabelText('Todo list loading')).toBeInTheDocument()
@@ -66,7 +66,7 @@ describe('TodoListPanel', () => {
       )
     })
 
-    renderWithClient(<TodoListPanel />)
+    renderWithClient(<TodoList />)
 
     const alert = await screen.findByRole('alert')
     expect(alert).toHaveTextContent(
@@ -77,8 +77,8 @@ describe('TodoListPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: /^retry$/i }))
 
     await waitFor(() => {
-      expect(screen.getByTestId('todo-list')).toBeInTheDocument()
+      expect(screen.getByTestId('todo-empty-state')).toBeInTheDocument()
     })
-    expect(screen.getByText('No todos yet.')).toBeInTheDocument()
+    expect(screen.getByText('Nothing here yet')).toBeInTheDocument()
   })
 })

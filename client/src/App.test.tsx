@@ -26,8 +26,6 @@ describe('App', () => {
     expect(
       screen.getByRole('heading', { name: /todo app/i }),
     ).toBeInTheDocument()
-    expect(
-      await screen.findByText('No todos yet.'),
-    ).toBeInTheDocument()
+    expect(await screen.findByText('Nothing here yet')).toBeInTheDocument()
   })
 })

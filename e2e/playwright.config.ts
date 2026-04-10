@@ -1,8 +1,16 @@
 import path from 'node:path';
 import { defineConfig, devices } from '@playwright/test';
 
-/** Repo root when tests are run via `npm run test:e2e` (e2e package cwd). */
-const repoRoot = path.resolve(process.cwd(), '..');
+/**
+ * Monorepo root for webServer `cwd`. In GitHub Actions we set `E2E_REPO_ROOT` to
+ * `${{ github.workspace }}` because `working-directory: e2e` makes `process.cwd()`
+ * the e2e folder (parent = root). Locally, `npm run test:e2e` also uses e2e as cwd.
+ */
+const repoRoot =
+  process.env.E2E_REPO_ROOT?.trim() ||
+  path.resolve(process.cwd(), '..');
+
+const isCi = !!process.env.CI;
 
 export default defineConfig({
   testDir: './tests',
@@ -11,10 +19,12 @@ export default defineConfig({
     timeout: 60_000,
   },
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  forbidOnly: isCi,
+  retries: isCi ? 2 : 0,
+  workers: isCi ? 1 : undefined,
+  reporter: isCi
+    ? [['github'], ['html', { open: 'never' }]]
+    : 'html',
   use: {
     ...devices['Desktop Chrome'],
     baseURL: 'http://127.0.0.1:5199',

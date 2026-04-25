@@ -48,15 +48,39 @@ jobs:
         working-directory: e2e
         run: npx playwright install --with-deps
 
+      # Start the app stack in the job shell (not Playwright webServer) so migrate/build/preview
+      # output is tailed in the log. Playwright’s webServer spawns a child with an empty `log` hook,
+      # which often hides the real error behind "Exit code: 1".
       - name: Run E2E tests
-        working-directory: e2e
         env:
           CI: true
           E2E_REPO_ROOT: ${{ github.workspace }}
           NODE_OPTIONS: --max-old-space-size=4096
           DATABASE_PATH: ${{ runner.temp }}/bmad-e2e.db
           CORS_ORIGIN: http://127.0.0.1:5199
-        run: npx playwright test
+          PLAYWRIGHT_E2E_EXTERNAL_SERVER: "1"
+        run: |
+          set -euxo pipefail
+          cleanup() {
+            set +e
+            if [ -f e2e-stack.pid ]; then kill "$(cat e2e-stack.pid)" 2>/dev/null || true; fi
+            fuser -k 3000/tcp 2>/dev/null || true
+            fuser -k 5199/tcp 2>/dev/null || true
+            set -e
+          }
+          trap cleanup EXIT
+          rm -f e2e-stack.log
+          npm run dev:e2e-stack > e2e-stack.log 2>&1 & echo $! > e2e-stack.pid
+          npx wait-on -t 180000 "http://127.0.0.1:5199" || { echo "=== e2e stack log (port 5199 never came up) ==="; cat e2e-stack.log; exit 1; }
+          ( cd e2e && npx playwright test ) || { echo "=== e2e stack log (playwright failed) ==="; cat e2e-stack.log; exit 1; }
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: e2e-stack-log
+          path: e2e-stack.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

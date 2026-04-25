@@ -11,6 +11,19 @@ const repoRoot =
   path.resolve(process.cwd(), '..');
 
 const isCi = !!process.env.CI;
+/** In GitHub Actions, start the stack in the workflow (see .github/workflows/ci.yml) so logs are visible. */
+const externalE2EStack = !!process.env.PLAYWRIGHT_E2E_EXTERNAL_SERVER;
+
+const webServer = externalE2EStack
+  ? undefined
+  : {
+      command: 'npm run dev:e2e-stack',
+      cwd: repoRoot,
+      url: 'http://127.0.0.1:5199' as const,
+      // When Playwright spawns the stack, don't reuse; local devs may still run with a server up via reuse in older configs.
+      reuseExistingServer: false,
+      timeout: 180_000,
+    };
 
 export default defineConfig({
   testDir: './tests',
@@ -30,12 +43,5 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:5199',
     trace: 'on-first-retry',
   },
-  webServer: {
-    command: 'npm run dev:e2e-stack',
-    cwd: repoRoot,
-    url: 'http://127.0.0.1:5199',
-    // Always start the stack Playwright expects (avoids reusing a stale dev server on the same port).
-    reuseExistingServer: false,
-    timeout: 180_000,
-  },
+  ...(webServer ? { webServer } : {}),
 });

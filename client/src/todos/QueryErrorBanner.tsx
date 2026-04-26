@@ -19,7 +19,7 @@ export function QueryErrorBanner({
         type="button"
         onClick={onRetry}
         disabled={isRetrying}
-        className="mt-2 inline-flex rounded-md border border-fg-error/50 bg-surface-page px-3 py-1.5 text-sm font-medium text-fg-primary focus-visible:ring-2 focus-visible:ring-fg-primary focus-visible:ring-offset-2 focus-visible:outline-none disabled:opacity-60"
+        className="mt-2 inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-fg-error/50 bg-surface-page px-3 text-sm font-medium text-fg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-error disabled:opacity-60"
       >
         Retry
       </button>

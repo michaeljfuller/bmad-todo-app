@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: "2026-04-09T02:06:36Z"
-last_updated: "2026-04-26T15:05:00Z"
+last_updated: "2026-04-26T19:20:00Z"
 project: bmad-todo-app
 project_key: NOKEY
 tracking_system: file-system
@@ -63,7 +63,7 @@ development_status:
   3-3-todoapp-shell-direction-9-layout-and-empty-state: done
   3-4-add-todo-flow-with-double-submit-protection: done
   3-5-todo-rows-complete-uncomplete-delete-metadata-and-styling: done
-  3-6-responsive-layout-keyboard-flows-and-motion-preferences: ready-for-dev
+  3-6-responsive-layout-keyboard-flows-and-motion-preferences: review
   3-7-end-to-end-trust-reload-server-alignment-and-error-journeys: ready-for-dev
   epic-3-retrospective: optional
 

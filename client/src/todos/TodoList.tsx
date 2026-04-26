@@ -41,7 +41,7 @@ export function TodoList() {
           {[0, 1, 2].map((i) => (
             <li
               key={i}
-              className="h-10 animate-pulse rounded-md bg-fg-primary/10"
+              className="h-10 animate-pulse rounded-md bg-fg-primary/10 motion-reduce:animate-none motion-reduce:opacity-50"
             />
           ))}
         </ul>

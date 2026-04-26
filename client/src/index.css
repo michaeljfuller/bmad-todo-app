@@ -64,4 +64,11 @@
   #root {
     min-height: 100dvh;
   }
+
+  /* Story 3.6: respect OS “reduce motion”; keep layout/focus rings usable without long transitions */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
 }

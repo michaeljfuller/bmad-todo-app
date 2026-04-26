@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: "2026-04-09T02:06:36Z"
-last_updated: "2026-04-26T16:30:00Z"
+last_updated: "2026-04-26T18:35:00Z"
 project: bmad-todo-app
 project_key: NOKEY
 tracking_system: file-system
@@ -69,7 +69,7 @@ development_status:
 
   epic-4: in-progress
   4-1-liveness-and-readiness-http-endpoints: done
-  4-2-multi-stage-dockerfiles-for-api-and-static-web: ready-for-dev
+  4-2-multi-stage-dockerfiles-for-api-and-static-web: review
   4-3-docker-compose-stack-with-healthchecks-and-sqlite-volume: ready-for-dev
   4-4-container-ci-and-documentation-for-deploy-shaped-workflows: ready-for-dev
   epic-4-retrospective: optional

@@ -1,6 +1,6 @@
 # Story 4.3: Docker Compose stack with healthchecks and SQLite volume
 
-Status: review
+Status: done
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -110,7 +110,7 @@ Composer (Cursor agent)
 - Root **`.env.example`**: **`API_PORT`**, **`WEB_PORT`**, **`VITE_API_BASE_URL`**, **`CORS_ORIGIN`**, **`LOG_LEVEL`** — no secrets; **`.env`** gitignored via existing rules.
 - **README:** new **Run with Docker Compose** section (ports, CORS/Vite semantics, volume wipe, logs, troubleshooting); layout table + out-of-scope; corrected API image note (migrations run at startup via **`database`** plugin).
 - **`api/.env.example`**: compose-oriented comments for **`DATABASE_PATH`** / **`CORS_ORIGIN`**.
-- **Tests:** `test/compose-docker-compose.contract.test.js` + root **`npm test`** wire-up (structural compose contract; no Docker CLI required in CI).
+- **Tests:** `test/compose-docker-compose.contract.test.js` + root **`npm test`** wire-up (structural compose contract; no Docker CLI — also run in **`api-integration`** CI via `node --test`).
 
 ### File List
 
@@ -122,7 +122,13 @@ Composer (Cursor agent)
 - `test/compose-docker-compose.contract.test.js`
 - `_bmad-output/implementation-artifacts/sprint-status.yaml`
 - `_bmad-output/implementation-artifacts/4-3-docker-compose-stack-with-healthchecks-and-sqlite-volume.md`
+- `.github/workflows/ci.yml` (post-review: compose contract step in `api-integration`)
 
 ## Change Log
 
 - **2026-04-26:** Story 4.3 — Compose stack (`app_net`, SQLite volume, `/ready` gating, env contract, README + root `.env.example`, compose contract test).
+- **2026-04-26:** Code review — compose contract test wired into **`api-integration`** CI job.
+
+### Review Findings
+
+- [x] [Review][Patch] Compose contract test is not executed in GitHub Actions — [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) runs API integration and E2E only; root `npm test` (which includes `test/compose-docker-compose.contract.test.js`) never runs on CI. The Dev Agent Record line implying the contract test is covered in CI is misleading; add a fast `node --test test/compose-docker-compose.contract.test.js` step after `npm ci` (e.g. in the api-integration job) and align the completion note. [`package.json`](../../package.json) [`test/compose-docker-compose.contract.test.js`](../../test/compose-docker-compose.contract.test.js) — **Resolved 2026-04-26:** CI step added in `api-integration` job; completion note updated.

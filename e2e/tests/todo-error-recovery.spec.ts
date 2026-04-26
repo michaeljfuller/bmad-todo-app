@@ -33,8 +33,9 @@ test.describe('todo error + recovery (Story 3.7 AC#2)', () => {
     // Client QueryClient uses `retry: 1` on queries — fail the initial fetch and the one retry
     // before the error banner appears; the next GET (user Retry) succeeds.
     let getFailuresRemaining = 2;
+    const matchTodosCollection = (url: URL) => isTodosCollectionUrl(url, api);
     await page.route(
-      (url) => isTodosCollectionUrl(url, api),
+      matchTodosCollection,
       async (route) => {
         if (route.request().method() !== 'GET') {
           await route.continue();
@@ -64,7 +65,7 @@ test.describe('todo error + recovery (Story 3.7 AC#2)', () => {
     ).toBeVisible();
     await expect(banner).not.toBeVisible();
 
-    await page.unroute((url) => isTodosCollectionUrl(url, api));
+    await page.unroute(matchTodosCollection);
   });
 
   test('failed POST create then second submit succeeds; list matches server', async ({
@@ -75,8 +76,9 @@ test.describe('todo error + recovery (Story 3.7 AC#2)', () => {
     const title = `POST retry ${Date.now()}`;
 
     let posts = 0;
+    const matchTodosCollection = (url: URL) => isTodosCollectionUrl(url, api);
     await page.route(
-      (url) => isTodosCollectionUrl(url, api),
+      matchTodosCollection,
       async (route) => {
         if (route.request().method() !== 'POST') {
           await route.continue();
@@ -122,6 +124,6 @@ test.describe('todo error + recovery (Story 3.7 AC#2)', () => {
     const body = (await listRes.json()) as { todos: Array<{ text: string }> };
     expect(body.todos.map((t) => t.text)).toContain(title);
 
-    await page.unroute((url) => isTodosCollectionUrl(url, api));
+    await page.unroute(matchTodosCollection);
   });
 });

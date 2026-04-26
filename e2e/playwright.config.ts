@@ -41,7 +41,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
-  workers: isCi ? 1 : undefined,
+  // Single shared SQLite file + one API process: parallel workers cause cross-test DB races locally.
+  workers: 1,
   reporter: isCi
     ? [['github'], ['html', { open: 'never' }]]
     : 'html',

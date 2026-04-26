@@ -1,6 +1,6 @@
 # Story 3.7: End-to-end trust — reload, server alignment, and error journeys
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -26,17 +26,32 @@ so that **I trust this scratchpad** (**FR14**, **FR26**, **FR11–FR12**, edge j
 
 ## Tasks / Subtasks
 
-- [ ] **Reload persistence E2E** (AC: #1, #3)
-  - [ ] Add a Playwright spec (e.g. `e2e/tests/todo-reload-persistence.spec.ts`) that: starts from a **non-empty** list (seed via **`request` API** to `POST /todos` and/or UI flow—pick one consistent approach), captures **expected titles/ids or stable text**, performs **`page.reload()`**, waits for list ready, asserts **parity** with server (either re-query API with `request` and compare, or assert the same visible items as before reload).
-  - [ ] Use the **same** `DATABASE_PATH` for the API process for the whole test so reload does not cross a wiped DB.
-- [ ] **Failure + recovery E2E** (AC: #2, #3)
-  - [ ] Add a spec (same file or `todo-error-recovery.spec.ts`) that simulates failure (**`page.route` abort/500**, temporary **down API**, or route mock) for **GET /todos** or a **mutation** endpoint, asserts **user-visible** error affordance (banner/inline + **Retry** if that’s what the app provides), then restores success and asserts **recovery** (list loads or mutation completes without silent data loss).
-  - [ ] Explicitly assert **no unexplained empty list** when the server still holds todos (guards wrong optimistic update behavior).
-- [ ] **CI / orchestration** (AC: #3)
-  - [ ] Extend **`e2e/playwright.config.ts`** (and/or **`webServer`** / **`globalSetup`**) so CI’s **`npm run test:e2e`** runs the **real** client + API against an **isolated** SQLite file (e.g. under `os.tmpdir()` or workspace `.tmp` gitignored), with **`CORS_ORIGIN`** matching the page origin Playwright uses (see **`client/.env.example`** / **`api/.env.example`**).
-  - [ ] Ensure **`.github/workflows/ci.yml`** `e2e` job remains green: install browsers, run full suite including new specs (may need env vars for `DATABASE_PATH`, `CORS_ORIGIN`, `VITE_API_BASE_URL` in the job).
-- [ ] **Docs** (AC: #3, #4)
-  - [ ] Update **README** (short subsection): how to run **product E2E** locally (ports, env, one command), and that **`ux-design-directions.html`** is **not** part of the build.
+- [x] **Reload persistence E2E** (AC: #1, #3)
+  - [x] Add a Playwright spec (e.g. `e2e/tests/todo-reload-persistence.spec.ts`) that: starts from a **non-empty** list (seed via **`request` API** to `POST /todos` and/or UI flow—pick one consistent approach), captures **expected titles/ids or stable text**, performs **`page.reload()`**, waits for list ready, asserts **parity** with server (either re-query API with `request` and compare, or assert the same visible items as before reload).
+  - [x] Use the **same** `DATABASE_PATH` for the API process for the whole test so reload does not cross a wiped DB.
+- [x] **Failure + recovery E2E** (AC: #2, #3)
+  - [x] Add a spec (same file or `todo-error-recovery.spec.ts`) that simulates failure (**`page.route` abort/500**, temporary **down API**, or route mock) for **GET /todos** or a **mutation** endpoint, asserts **user-visible** error affordance (banner/inline + **Retry** if that’s what the app provides), then restores success and asserts **recovery** (list loads or mutation completes without silent data loss).
+  - [x] Explicitly assert **no unexplained empty list** when the server still holds todos (guards wrong optimistic update behavior).
+- [x] **CI / orchestration** (AC: #3)
+  - [x] Extend **`e2e/playwright.config.ts`** (and/or **`webServer`** / **`globalSetup`**) so CI’s **`npm run test:e2e`** runs the **real** client + API against an **isolated** SQLite file (e.g. under `os.tmpdir()` or workspace `.tmp` gitignored), with **`CORS_ORIGIN`** matching the page origin Playwright uses (see **`client/.env.example`** / **`api/.env.example`**).
+  - [x] Ensure **`.github/workflows/ci.yml`** `e2e` job remains green: install browsers, run full suite including new specs (may need env vars for `DATABASE_PATH`, `CORS_ORIGIN`, `VITE_API_BASE_URL` in the job).
+- [x] **Docs** (AC: #3, #4)
+  - [x] Update **README** (short subsection): how to run **product E2E** locally (ports, env, one command), and that **`ux-design-directions.html`** is **not** part of the build.
+
+### Review Findings
+
+- [x] [Review][Patch] **`page.unroute` must use the same function reference** as `page.route` when the URL matcher is a function (`urlMatchesEqual` is `===` in Playwright). Replaced duplicate arrow predicates with a shared `matchTodosCollection` per test in **`e2e/tests/todo-error-recovery.spec.ts`** — fixed 2026-04-26.
+- [x] [Review][Patch] **`workers: 1`** in **`e2e/playwright.config.ts`** — product E2E shares one SQLite file and one API; default multi-worker runs locally caused cross-spec DB races (CI was already `1`). — fixed 2026-04-26.
+
+### Senior Developer Review (AI)
+
+**Review date:** 2026-04-26  
+**Outcome:** Approve  
+
+#### Action Items
+
+- [x] Playwright route/unroute matcher reference (`todo-error-recovery.spec.ts`).
+- [x] E2E worker count for shared DB determinism (`e2e/playwright.config.ts`).
 
 ## Dev Notes
 
@@ -93,11 +108,32 @@ so that **I trust this scratchpad** (**FR14**, **FR26**, **FR11–FR12**, edge j
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Composer (Cursor agent)
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- Implemented Story 3.7: reload parity E2E (`todo-reload-persistence.spec.ts`), GET/POST error recovery (`todo-error-recovery.spec.ts`) with `page.route` + `isTodosCollectionUrl` helper; aligned GET failure count with app `QueryClient` `retry: 1` (two aborted GETs before banner).
+- Default E2E DB path moved to gitignored `.tmp/e2e-stack.db` via `scripts/e2e-dev-stack.sh`; CI already used `${{ runner.temp }}/bmad-e2e.db`.
+- `QueryErrorBanner`: `data-testid="todo-list-error-banner"` for stable E2E selectors.
+- README: product E2E checklist + `ux-design-directions.html` reference-only note; `e2e/playwright.config.ts`: env documentation block.
+- Code review (2026-04-26): shared `matchTodosCollection` for `route`/`unroute`; `workers: 1` for shared SQLite + single API determinism.
+
 ### File List
+
+- `e2e/tests/todo-reload-persistence.spec.ts`
+- `e2e/tests/todo-error-recovery.spec.ts`
+- `e2e/helpers/clearAllTodos.ts`
+- `e2e/playwright.config.ts`
+- `scripts/e2e-dev-stack.sh`
+- `client/src/todos/QueryErrorBanner.tsx`
+- `README.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/3-7-end-to-end-trust-reload-server-alignment-and-error-journeys.md`
+
+## Change Log
+
+- 2026-04-26 — Story 3.7 implementation: reload + error recovery E2E, isolated default E2E DB, README/playwright env docs, list error `data-testid`.
+- 2026-04-26 — Code review: Playwright `unroute` matcher identity + `workers: 1`; story marked **done**.
 

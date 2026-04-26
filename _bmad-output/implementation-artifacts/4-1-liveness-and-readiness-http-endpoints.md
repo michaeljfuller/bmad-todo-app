@@ -1,6 +1,6 @@
 # Story 4.1: Liveness and readiness HTTP endpoints
 
-Status: ready-for-dev
+Status: review
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -24,20 +24,20 @@ so that **orchestrators and Compose can tell when the service and DB are actuall
 
 ## Tasks / Subtasks
 
-- [ ] **Implement `GET /health`** (AC: #1, #3)
-  - [ ] Add route in **`api/routes/root.js`** (Architecture places **`/health`** and **`/ready`** next to root routes) [Source: `architecture.md` — `api/routes/root.js` extend]
-  - [ ] Keep handler **free of `fastify.db`** access; return minimal JSON (e.g. `{ "status": "ok" }` or `{ "ok": true }`)—pick one and stay consistent with any future **web** static health wording
-- [ ] **Implement `GET /ready`** (AC: #2, #3)
-  - [ ] Use **`fastify.db`** (or the underlying SQLite handle if a thin probe is clearer) to run a **cheap** read (e.g. `SELECT 1` via Drizzle/sql or `limit(0)` pattern that still validates the table exists post-migration)
-  - [ ] On failure: **503** + safe message; log details at **warn/error** with **Pino** if not already covered by a global error handler—**never** leak `DATABASE_PATH` in JSON
-- [ ] **Tests** (AC: #4)
-  - [ ] Prefer **`api/test/integration/`** for inject-based contract tests alongside existing todo/OpenAPI tests, **or** extend **`api/test/routes/root.test.js`** if you keep scope small—**one convention**: integration folder is preferred for new **ops** endpoints mirroring **`todos-*.test.js`**
-  - [ ] Cover success paths for **`/health`** and **`/ready`** with **`build(t)`** from **`api/test/helper.js`** (already sets temp `DATABASE_PATH` and tears down)
-  - [ ] Cover at least **one** “not ready” path for **`/ready`**
-- [ ] **OpenAPI** (AC: #3, contract CI)
-  - [ ] Register **route schemas** (or manual OpenAPI path entries) for **`/health`** and **`/ready`** under **`@fastify/swagger`** so **`GET /documentation/json`** in **non-production** includes these paths (tests use `NODE_ENV=test` today—follow existing **`api/plugins/swagger.js`** behavior)
-  - [ ] Extend **`api/test/integration/openapi-contract.test.js`** (or adjacent test) to assert **`paths['/health']`** and **`paths['/ready']`** exist with **GET** and documented **2xx** / **503** as appropriate
-- [ ] **Postman** — Update **`api/postman/bmad-todo-api.postman_collection.json`** with **`GET /health`** and **`GET /ready`** requests so the contract matches the repo [Source: `_bmad-output/project-context.md` — API changes]
+- [x] **Implement `GET /health`** (AC: #1, #3)
+  - [x] Add route in **`api/routes/root.js`** (Architecture places **`/health`** and **`/ready`** next to root routes) [Source: `architecture.md` — `api/routes/root.js` extend]
+  - [x] Keep handler **free of `fastify.db`** access; return minimal JSON (e.g. `{ "status": "ok" }` or `{ "ok": true }`)—pick one and stay consistent with any future **web** static health wording
+- [x] **Implement `GET /ready`** (AC: #2, #3)
+  - [x] Use **`fastify.db`** (or the underlying SQLite handle if a thin probe is clearer) to run a **cheap** read (e.g. `SELECT 1` via Drizzle/sql or `limit(0)` pattern that still validates the table exists post-migration)
+  - [x] On failure: **503** + safe message; log details at **warn/error** with **Pino** if not already covered by a global error handler—**never** leak `DATABASE_PATH` in JSON
+- [x] **Tests** (AC: #4)
+  - [x] Prefer **`api/test/integration/`** for inject-based contract tests alongside existing todo/OpenAPI tests, **or** extend **`api/test/routes/root.test.js`** if you keep scope small—**one convention**: integration folder is preferred for new **ops** endpoints mirroring **`todos-*.test.js`**
+  - [x] Cover success paths for **`/health`** and **`/ready`** with **`build(t)`** from **`api/test/helper.js`** (already sets temp `DATABASE_PATH` and tears down)
+  - [x] Cover at least **one** “not ready” path for **`/ready`**
+- [x] **OpenAPI** (AC: #3, contract CI)
+  - [x] Register **route schemas** (or manual OpenAPI path entries) for **`/health`** and **`/ready`** under **`@fastify/swagger`** so **`GET /documentation/json`** in **non-production** includes these paths (tests use `NODE_ENV=test` today—follow existing **`api/plugins/swagger.js`** behavior)
+  - [x] Extend **`api/test/integration/openapi-contract.test.js`** (or adjacent test) to assert **`paths['/health']`** and **`paths['/ready']`** exist with **GET** and documented **2xx** / **503** as appropriate
+- [x] **Postman** — Update **`api/postman/bmad-todo-api.postman_collection.json`** with **`GET /health`** and **`GET /ready`** requests so the contract matches the repo [Source: `_bmad-output/project-context.md` — API changes]
 
 ## Dev Notes
 
@@ -96,12 +96,26 @@ so that **orchestrators and Compose can tell when the service and DB are actuall
 
 ### Agent Model Used
 
-_(To be filled by dev agent)_
+Composer (Cursor agent)
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- Implemented **`GET /health`** → `{ "status": "ok" }` with no DB access; **`GET /ready`** → Drizzle `select().from(todos).limit(1)` with **503** + `{ error: { code: "NOT_READY", message: "Service is not ready" } }` on probe failure; **warn** log with `reqId` + err (no path leak in JSON).
+- Added **`api/schemas/health-ready-contract.js`** route schemas; **`ops`** tag in **`api/plugins/swagger.js`**; integration tests **`api/test/integration/health-ready.test.js`** (`build(t)` + stub `app.db.select` throws for not-ready); extended **`openapi-contract.test.js`** for `/health` and `/ready` paths; Postman Root folder requests for **`GET /health`** / **`GET /ready`**.
+
 ### File List
 
-_(Dev agent: list all touched files before marking story done.)_
+- `api/routes/root.js`
+- `api/schemas/health-ready-contract.js`
+- `api/plugins/swagger.js`
+- `api/test/integration/health-ready.test.js`
+- `api/test/integration/openapi-contract.test.js`
+- `api/postman/bmad-todo-api.postman_collection.json`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/4-1-liveness-and-readiness-http-endpoints.md`
+
+## Change Log
+
+- **2026-04-26** — Story 4.1: liveness **`GET /health`**, readiness **`GET /ready`**, OpenAPI + Postman + integration tests; sprint status **in-progress** → **review**.

@@ -8,6 +8,9 @@ const { addTodoContractSchemas } = require('../schemas/todos-contract')
  * JSON spec at `/documentation/json` for test/CI when UI is not mounted (avoids duplicate route).
  */
 module.exports = fp(async function swaggerPlugin(fastify, _opts) {
+  // Shared JSON Schemas ($ref) are required in all environments for route serialization.
+  addTodoContractSchemas(fastify)
+
   if (process.env.NODE_ENV === 'production') {
     return
   }
@@ -28,8 +31,6 @@ module.exports = fp(async function swaggerPlugin(fastify, _opts) {
       servers: [{ url: '/', description: 'Current host' }],
     },
   })
-
-  addTodoContractSchemas(fastify)
 
   const isDev = process.env.NODE_ENV === 'development'
 

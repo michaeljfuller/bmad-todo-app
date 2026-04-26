@@ -39,4 +39,13 @@ test('GET /documentation/json exposes /todos contract, methods, 204 DELETE, erro
       s.required.includes('error')
   )
   assert.ok(hasErrorEnvelope, 'OpenAPI must include error envelope schema (error.code, error.message)')
+
+  const health = doc.paths['/health'] ?? doc.paths['/health/']
+  assert.ok(health?.get, 'OpenAPI must document GET /health')
+  assert.ok(health.get.responses['200'] ?? health.get.responses[200], 'GET /health must document 200')
+
+  const ready = doc.paths['/ready'] ?? doc.paths['/ready/']
+  assert.ok(ready?.get, 'OpenAPI must document GET /ready')
+  assert.ok(ready.get.responses['200'] ?? ready.get.responses[200], 'GET /ready must document 200')
+  assert.ok(ready.get.responses['503'] ?? ready.get.responses[503], 'GET /ready must document 503')
 })

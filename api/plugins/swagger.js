@@ -21,7 +21,10 @@ module.exports = fp(async function swaggerPlugin(fastify, _opts) {
         description:
           'Todo REST API under `/todos` (single prefix). Errors: `{ "error": { "code", "message", "details?" } }`.',
       },
-      tags: [{ name: 'todos', description: 'Todo CRUD' }],
+      tags: [
+        { name: 'todos', description: 'Todo CRUD' },
+        { name: 'ops', description: 'Liveness and readiness' },
+      ],
       servers: [{ url: '/', description: 'Current host' }],
     },
   })

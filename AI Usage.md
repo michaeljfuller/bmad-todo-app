@@ -34,7 +34,7 @@ Created using Cursor's Auto mode throughout.
 
 ## Limitations Encountered  
 > What couldn't the AI do well? Where was human expertise critical?  
-- Sometimes didn't mark reviews as done after discussion, when I said I was happy with the outcome, unless explicitly stated.
+- About 5% of the time, seemed to forget to update the sprint and story status docs.
 - It thought there was an error connecting to a new endpoint and suspected that Postman was trying to access an endpoint that wasn't ours, when it was just because it didn't use a hot or manual reload.
 - Despite adding some guidence in the context, it did need to be reminded of some tasks I wanted it to do after certain steps, like run some additional tests automatically.
-- The Playwright tests wheren't working and the error was too vague for it to figure out why. I had to tell it to start from scratch and point it to some docs. Still no success, but works locally. Left until later after token allowance resets.
+- The Playwright tests wheren't working and the error was too vague for it to figure out why. Needed some hand holding for it to figure out the problem. 

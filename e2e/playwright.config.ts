@@ -11,7 +11,14 @@ const repoRoot =
   path.resolve(process.cwd(), '..');
 
 const isCi = !!process.env.CI;
-/** In GitHub Actions, start the stack in the workflow (see .github/workflows/ci.yml) so logs are visible. */
+/**
+ * Product E2E expects a real API + client preview on 5199 (see `scripts/e2e-dev-stack.sh`).
+ * Env wiring (local + CI):
+ * - `DATABASE_PATH` — isolated SQLite file for the API (default under repo `.tmp/` when unset in script).
+ * - `CORS_ORIGIN` — must be `http://127.0.0.1:5199` (Playwright `baseURL` / preview origin).
+ * - `E2E_REPO_ROOT` — repo root when `cwd` is `e2e/` (CI sets this).
+ * - `PLAYWRIGHT_E2E_EXTERNAL_SERVER=1` — CI starts the stack in the workflow; Playwright skips `webServer`.
+ */
 const externalE2EStack = !!process.env.PLAYWRIGHT_E2E_EXTERNAL_SERVER;
 
 const webServer = externalE2EStack
@@ -34,7 +41,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCi,
   retries: isCi ? 2 : 0,
-  workers: isCi ? 1 : undefined,
+  // Single shared SQLite file + one API process: parallel workers cause cross-test DB races locally.
+  workers: 1,
   reporter: isCi
     ? [['github'], ['html', { open: 'never' }]]
     : 'html',

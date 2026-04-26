@@ -12,6 +12,7 @@ export function QueryErrorBanner({
   return (
     <div
       role="alert"
+      data-testid="todo-list-error-banner"
       className="rounded-md border border-fg-error/40 bg-surface-error px-3 py-3 text-sm text-fg-error"
     >
       <p>{message}</p>

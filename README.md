@@ -1,5 +1,13 @@
 # bmad-todo-app
 
+## Summary
+
+This repository is a full-stack **todo** application: a React SPA talks to a Fastify API backed by SQLite so you can add tasks, mark them complete, and delete them—with created and updated timestamps shown in the UI.
+
+![Todo app: task list with checkboxes, timestamps, delete actions, and new-task form](docs/images/screenshot.png)
+
+For notes on how AI-assisted workflows were used on this project, see **[AI Usage](AI%20Usage.md)**.
+
 Monorepo: **`client/`** (Vite + React + TypeScript), **`api/`** (Fastify), **`e2e/`** (Playwright). Root **`package.json`** uses **npm workspaces**.
 
 For deeper technical boundaries, see [`_bmad-output/planning-artifacts/architecture.md`](_bmad-output/planning-artifacts/architecture.md).

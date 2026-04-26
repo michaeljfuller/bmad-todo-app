@@ -95,6 +95,77 @@ Automated coverage lives in **`e2e/tests/keyboard-flows.spec.ts`**. For QA witho
 npm run build --workspace client
 ```
 
+## Build container images
+
+Build from the **repository root** so `package-lock.json` and npm workspaces resolve correctly. Dockerfiles are multi-stage; **API** and **web** final stages run as **non-root**. Story **4.3** adds root **`docker compose`** wiring (healthchecks, SQLite volume)—this section is **image build + run** only.
+
+### API image
+
+```bash
+docker build -f docker/api.Dockerfile -t bmad-todo-api:local .
+```
+
+**Run (smoke)** — set a **writable** SQLite path the non-root user can create (defaults in [`api/.env.example`](api/.env.example) use `./data/todos.db` relative to the API package; in the image, **`/data/todos.db`** is typical):
+
+```bash
+docker run --rm \
+  -e DATABASE_PATH=/data/todos.db \
+  -e CORS_ORIGIN=http://127.0.0.1:8080 \
+  -p 3000:3000 \
+  bmad-todo-api:local
+```
+
+Migrations are **not** run automatically in the image `CMD`; run once when deploying with the **same** `DATABASE_PATH` and **`/data` volume** (or bind mount) you use for the long-running container (see [`api/package.json`](api/package.json) `db:migrate`).
+
+**Migrate (one-shot)** — example using a named volume so the DB file survives the container:
+
+```bash
+docker volume create bmad-todo-sqlite
+
+docker run --rm \
+  -e DATABASE_PATH=/data/todos.db \
+  -v bmad-todo-sqlite:/data \
+  bmad-todo-api:local \
+  npm run db:migrate --workspace=api
+```
+
+Then start the API with the same volume, for example:
+
+```bash
+docker run --rm \
+  -e DATABASE_PATH=/data/todos.db \
+  -e CORS_ORIGIN=http://127.0.0.1:8080 \
+  -p 3000:3000 \
+  -v bmad-todo-sqlite:/data \
+  bmad-todo-api:local
+```
+
+The image includes a **`HEALTHCHECK`** that **GET**s `http://127.0.0.1:${PORT:-3000}/health` (requires **`curl`** in the image).
+
+### Web image (Vite build args)
+
+**`VITE_API_BASE_URL`** is applied at **Vite build time** (same semantics as [`client/.env.example`](client/.env.example)): the browser-visible API origin **without** a path suffix; the client calls `GET {VITE_API_BASE_URL}/todos`.
+
+```bash
+docker build -f docker/web.Dockerfile \
+  --build-arg VITE_API_BASE_URL=http://127.0.0.1:3000 \
+  -t bmad-todo-web:local .
+```
+
+Use a value the **user’s browser** can reach (e.g. `http://localhost:3000` when the API is published on localhost, or your eventual public API URL behind a reverse proxy).
+
+**Run (smoke)** — the static image listens on **8080** (nginx unprivileged):
+
+```bash
+docker run --rm -p 8080:8080 bmad-todo-web:local
+```
+
+Then open `http://127.0.0.1:8080/` — expect **200** and the SPA shell (`index.html` plus hashed assets under `/assets/`).
+
+### Platforms
+
+Images are built for the **daemon’s default platform** (e.g. **linux/arm64** on Apple Silicon, **linux/amd64** on typical Linux CI). To target CI explicitly: `docker buildx build --platform linux/amd64 -f docker/api.Dockerfile .` (and add **`linux/arm64`** to `--platform` when publishing multi-arch).
+
 ## Project layout
 
 | Path        | Role                                      |
@@ -103,6 +174,7 @@ npm run build --workspace client
 | `api/`      | Fastify API (fastify-cli); `.env.example` for server env |
 | `e2e/`      | Playwright config and specs               |
 | `scripts/`  | Root automation (e.g. `bootstrap.mjs`)    |
+| `docker/`   | Production **`*.Dockerfile`** and nginx config for the static SPA |
 
 ## Troubleshooting
 
@@ -115,12 +187,12 @@ npm run build --workspace client
 
 ## Out of scope (Epic 1)
 
-The following are **not** part of closing **Epic 1** in this repository; they are planned in later epics and will get their own docs/workflows:
+The following were **not** part of closing **Epic 1**; some have landed in later epics:
 
-- **Docker**, multi-stage images, and **Docker Compose** stacks → **Epic 4** (see `_bmad-output/planning-artifacts/epics.md`).
-- **API HTTP integration tests** under **`api/test/integration/`** (real HTTP against an isolated DB) → **Epic 2** and related stories.
+- **Multi-stage Docker images** for API + static web → **`docker/*.Dockerfile`** and the **Build container images** section above (**Epic 4**, Story 4.2).
+- **Root `docker compose`** stack (healthchecks, SQLite volume, service wiring) → **Story 4.3** (README will gain compose steps there).
 
-Do not expect README steps for **`docker compose`** or **`api/test/integration/`** until those epics land.
+**API HTTP integration tests** under **`api/test/integration/`** are part of **Epic 2** (already in-repo); see **Testing** above for how to run them via the API workspace.
 
 ## CI
 

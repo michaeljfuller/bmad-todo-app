@@ -54,6 +54,52 @@ function isTodoShape(value: unknown): value is Todo {
   )
 }
 
+export async function patchTodo(
+  id: number,
+  input: { completed: boolean },
+): Promise<Todo> {
+  const base = resolveApiBaseUrl()
+  const res = await fetch(`${base}/todos/${id}`, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    credentials: 'omit',
+    body: JSON.stringify({ completed: input.completed }),
+  })
+
+  if (!res.ok) {
+    const userMessage = await mapApiError(res)
+    throw new Error(userMessage)
+  }
+
+  const body: unknown = await res.json()
+  if (!isTodoShape(body)) {
+    throw new Error('The server returned an unexpected response.')
+  }
+  return body
+}
+
+/** Success is 204 No Content with an empty body — do not parse JSON. */
+export async function deleteTodo(id: number): Promise<void> {
+  const base = resolveApiBaseUrl()
+  const res = await fetch(`${base}/todos/${id}`, {
+    method: 'DELETE',
+    headers: { Accept: 'application/json' },
+    credentials: 'omit',
+  })
+
+  if (!res.ok) {
+    const userMessage = await mapApiError(res)
+    throw new Error(userMessage)
+  }
+
+  if (res.status !== 204) {
+    throw new Error('The server returned an unexpected response.')
+  }
+}
+
 export async function createTodo(input: { text: string }): Promise<Todo> {
   const base = resolveApiBaseUrl()
   const res = await fetch(`${base}/todos`, {

@@ -1,4 +1,5 @@
 import { QueryErrorBanner } from './QueryErrorBanner'
+import { TodoItem } from './TodoItem'
 import { useTodosQuery } from './useTodosQuery'
 
 export function TodoList() {
@@ -73,12 +74,7 @@ export function TodoList() {
       ) : (
         <ul data-testid="todo-list" className="flex flex-col gap-2">
           {todos.map((t) => (
-            <li
-              key={t.id}
-              className="rounded-md border border-fg-primary/15 px-3 py-2 text-fg-primary"
-            >
-              {t.text}
-            </li>
+            <TodoItem key={t.id} todo={t} />
           ))}
         </ul>
       )}

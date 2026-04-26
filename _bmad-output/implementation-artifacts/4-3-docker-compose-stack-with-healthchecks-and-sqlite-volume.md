@@ -1,6 +1,6 @@
 # Story 4.3: Docker Compose stack with healthchecks and SQLite volume
 
-Status: ready-for-dev
+Status: done
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -28,22 +28,22 @@ so that **demos and local prod-like runs match Architecture** (**FR24**).
 
 ## Tasks / Subtasks
 
-- [ ] **Prerequisite gate** (AC: all) — Confirm **Story 4.1** (`/health`, `/ready`) and **Story 4.2** (`docker/api.Dockerfile`, `docker/web.Dockerfile`) exist and match Architecture; if implementing out of order, implement minimal 4.1/4.2 artifacts in the same change set so compose is not broken.
+- [x] **Prerequisite gate** (AC: all) — Confirm **Story 4.1** (`/health`, `/ready`) and **Story 4.2** (`docker/api.Dockerfile`, `docker/web.Dockerfile`) exist and match Architecture; if implementing out of order, implement minimal 4.1/4.2 artifacts in the same change set so compose is not broken.
 
-- [ ] **`docker-compose.yml`** (AC: #1, #3, #4, #5)
-  - [ ] Define **`api`** and **`web`** services, **`build:`** contexts pointing at **`docker/api.Dockerfile`** and **`docker/web.Dockerfile`**.
-  - [ ] Attach **volume(s)** for SQLite path used by **`DATABASE_PATH`** inside the container (prefer **named volume** or documented bind mount, e.g. `/data` → consistent with Architecture examples).
-  - [ ] **`depends_on`** with **`condition: service_healthy`** from **`web`** → **`api`**.
-  - [ ] **`healthcheck`** blocks calling **`/health`** and **`/ready`** on **`api`** with correct **`PORT`**; align intervals/timeouts with cold-start + migration time.
-  - [ ] **`ports`** for published **API** and **web** ports; document defaults (`API_PORT` / `WEB_PORT` in `.env.example` if used).
+- [x] **`docker-compose.yml`** (AC: #1, #3, #4, #5)
+  - [x] Define **`api`** and **`web`** services, **`build:`** contexts pointing at **`docker/api.Dockerfile`** and **`docker/web.Dockerfile`**.
+  - [x] Attach **volume(s)** for SQLite path used by **`DATABASE_PATH`** inside the container (prefer **named volume** or documented bind mount, e.g. `/data` → consistent with Architecture examples).
+  - [x] **`depends_on`** with **`condition: service_healthy`** from **`web`** → **`api`**.
+  - [x] **`healthcheck`** blocks calling **`/health`** and **`/ready`** on **`api`** with correct **`PORT`**; align intervals/timeouts with cold-start + migration time.
+  - [x] **`ports`** for published **API** and **web** ports; document defaults (`API_PORT` / `WEB_PORT` in `.env.example` if used).
 
-- [ ] **Environment contract** (AC: #2, #5)
-  - [ ] Set **`DATABASE_PATH`** inside **`api`** to a **container path** on the mounted volume (e.g. `/data/todos.db`) — `api/db/index.js` resolves relative paths against **`api/`**; prefer **absolute** paths in compose to avoid ambiguity.
-  - [ ] Set **`CORS_ORIGIN`** to the **browser-origin URL** of the **web** service (e.g. `http://localhost:<web-host-port>`), not an internal Docker DNS name, because CORS compares to the page origin.
-  - [ ] **`web`** image: ensure **`VITE_API_BASE_URL`** at **build time** points at the URL the **browser** uses to reach the API (host-mapped port or documented reverse-proxy story) — see Story **4.2** README/build-arg notes and Epic 3 retro “build-arg for API base URL”.
+- [x] **Environment contract** (AC: #2, #5)
+  - [x] Set **`DATABASE_PATH`** inside **`api`** to a **container path** on the mounted volume (e.g. `/data/todos.db`) — `api/db/index.js` resolves relative paths against **`api/`**; prefer **absolute** paths in compose to avoid ambiguity.
+  - [x] Set **`CORS_ORIGIN`** to the **browser-origin URL** of the **web** service (e.g. `http://localhost:<web-host-port>`), not an internal Docker DNS name, because CORS compares to the page origin.
+  - [x] **`web`** image: ensure **`VITE_API_BASE_URL`** at **build time** points at the URL the **browser** uses to reach the API (host-mapped port or documented reverse-proxy story) — see Story **4.2** README/build-arg notes and Epic 3 retro “build-arg for API base URL”.
 
-- [ ] **Documentation** (AC: #2, #5, #6)
-  - [ ] README (or a short **`docs/compose.md`** only if README would become unwieldy — prefer README section per Epic **4.4** scope split): **`docker compose up --build`**, ports, volume behavior, **`docker compose down` vs `-v`**, **`docker compose logs -f api`**, troubleshooting unready API (DB permissions, migration failures).
+- [x] **Documentation** (AC: #2, #5, #6)
+  - [x] README (or a short **`docs/compose.md`** only if README would become unwieldy — prefer README section per Epic **4.4** scope split): **`docker compose up --build`**, ports, volume behavior, **`docker compose down` vs `-v`**, **`docker compose logs -f api`**, troubleshooting unready API (DB permissions, migration failures).
 
 ## Dev Notes
 
@@ -99,12 +99,36 @@ so that **demos and local prod-like runs match Architecture** (**FR24**).
 
 ### Agent Model Used
 
-_(To be filled by dev agent at implementation time)_
+Composer (Cursor agent)
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- Verified **4.1** routes (`api/routes/root.js`) and **4.2** Dockerfiles under **`docker/`** before compose work.
+- Root **`docker-compose.yml`**: **`api`** + **`web`**, named volume **`sqlite_data`:** → **`/data`**, **`DATABASE_PATH=/data/todos.db`**, bridge **`app_net`**, **`web.depends_on.api.condition: service_healthy`**. API Compose **healthcheck** uses **`GET /ready`** (45s start_period, curl); image Dockerfile **HEALTHCHECK** remains **`/health`** for standalone runs. Web healthcheck: **`wget`** on **`/`** :8080.
+- Root **`.env.example`**: **`API_PORT`**, **`WEB_PORT`**, **`VITE_API_BASE_URL`**, **`CORS_ORIGIN`**, **`LOG_LEVEL`** — no secrets; **`.env`** gitignored via existing rules.
+- **README:** new **Run with Docker Compose** section (ports, CORS/Vite semantics, volume wipe, logs, troubleshooting); layout table + out-of-scope; corrected API image note (migrations run at startup via **`database`** plugin).
+- **`api/.env.example`**: compose-oriented comments for **`DATABASE_PATH`** / **`CORS_ORIGIN`**.
+- **Tests:** `test/compose-docker-compose.contract.test.js` + root **`npm test`** wire-up (structural compose contract; no Docker CLI — also run in **`api-integration`** CI via `node --test`).
+
 ### File List
 
-_(Amend at completion: e.g. `docker-compose.yml`, `.env.example`, `README.md`, …)_
+- `docker-compose.yml`
+- `.env.example`
+- `README.md`
+- `api/.env.example`
+- `package.json`
+- `test/compose-docker-compose.contract.test.js`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/4-3-docker-compose-stack-with-healthchecks-and-sqlite-volume.md`
+- `.github/workflows/ci.yml` (post-review: compose contract step in `api-integration`)
+
+## Change Log
+
+- **2026-04-26:** Story 4.3 — Compose stack (`app_net`, SQLite volume, `/ready` gating, env contract, README + root `.env.example`, compose contract test).
+- **2026-04-26:** Code review — compose contract test wired into **`api-integration`** CI job.
+
+### Review Findings
+
+- [x] [Review][Patch] Compose contract test is not executed in GitHub Actions — [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) runs API integration and E2E only; root `npm test` (which includes `test/compose-docker-compose.contract.test.js`) never runs on CI. The Dev Agent Record line implying the contract test is covered in CI is misleading; add a fast `node --test test/compose-docker-compose.contract.test.js` step after `npm ci` (e.g. in the api-integration job) and align the completion note. [`package.json`](../../package.json) [`test/compose-docker-compose.contract.test.js`](../../test/compose-docker-compose.contract.test.js) — **Resolved 2026-04-26:** CI step added in `api-integration` job; completion note updated.

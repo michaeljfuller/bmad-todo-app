@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Compose stack contract (Story 4.3)
+        run: node --test test/compose-docker-compose.contract.test.js
+
       - name: Run API integration tests
         env:
           NODE_ENV: test

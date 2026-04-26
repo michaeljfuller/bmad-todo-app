@@ -1,6 +1,6 @@
 # Story 3.5: Todo rows — complete, uncomplete, delete, metadata, and styling
 
-Status: ready-for-dev
+Status: review
 
 <!-- Ultimate context engine analysis completed — comprehensive developer guide created. -->
 
@@ -24,19 +24,19 @@ so that **I can manage my list at a glance** (**FR4–FR8**, **FR7**, **UX-DR3**
 
 ## Tasks / Subtasks
 
-- [ ] **Prerequisites** (AC: all)
-  - [ ] Confirm **Epic 2** API is available: **`GET/POST/PATCH/DELETE`** under **`/todos`**; **`PATCH`** returns **full todo** JSON; **`DELETE`** returns **204** ([Source: `api/routes/todos/index.js`](../../api/routes/todos/index.js)).
-  - [ ] Implement or integrate with **Stories 3.1–3.4** deliverables: **Tailwind tokens**, **QueryClient + list query**, **`TodoApp` / `TodoList` / `AddTodoForm`**, and **mutation patterns** for create. **Do not** duplicate global list loading — extend the existing list to render rows with row-level mutations.
-- [ ] **`TodoItem` row UI** (AC: #1–#4, #7)
-  - [ ] Checkbox + text + metadata stack; **Space** toggles checkbox when focused (**UX-DR6** — full keyboard polish may overlap **3.6**; minimum here is labeled control and toggle works).
-  - [ ] **Delete** button: ghost/outline, focus ring, accessible name.
-  - [ ] Wire **`useMutation`** (TanStack Query v5) for **PATCH** and **DELETE** with **`mutationKey`** / invalidation aligned to **`['todos']`** ([Source: `_bmad-output/project-context.md`](../project-context.md)).
-- [ ] **Server alignment** (AC: #5, #6)
-  - [ ] After successful **PATCH**, merge response or refetch so **`updatedAt`** / **`completed`** match server (**FR26**).
-  - [ ] Handle **404** / **400** with mapped user-facing messages; retry policy consistent with project rules (no blind **POST** retry; list refetch retry may already exist from **3.2**).
-- [ ] **Tests** (AC: #8, #9)
-  - [ ] Vitest + Testing Library: row states and mutation-disabled behavior with mocked API.
-  - [ ] Playwright: three journeys as specified; align with `e2e/` config from Epic 1.
+- [x] **Prerequisites** (AC: all)
+  - [x] Confirm **Epic 2** API is available: **`GET/POST/PATCH/DELETE`** under **`/todos`**; **`PATCH`** returns **full todo** JSON; **`DELETE`** returns **204** ([Source: `api/routes/todos/index.js`](../../api/routes/todos/index.js)).
+  - [x] Implement or integrate with **Stories 3.1–3.4** deliverables: **Tailwind tokens**, **QueryClient + list query**, **`TodoApp` / `TodoList` / `AddTodoForm`**, and **mutation patterns** for create. **Do not** duplicate global list loading — extend the existing list to render rows with row-level mutations.
+- [x] **`TodoItem` row UI** (AC: #1–#4, #7)
+  - [x] Checkbox + text + metadata stack; **Space** toggles checkbox when focused (**UX-DR6** — full keyboard polish may overlap **3.6**; minimum here is labeled control and toggle works).
+  - [x] **Delete** button: ghost/outline, focus ring, accessible name.
+  - [x] Wire **`useMutation`** (TanStack Query v5) for **PATCH** and **DELETE** with **`mutationKey`** / invalidation aligned to **`['todos']`** ([Source: `_bmad-output/project-context.md`](../project-context.md)).
+- [x] **Server alignment** (AC: #5, #6)
+  - [x] After successful **PATCH**, merge response or refetch so **`updatedAt`** / **`completed`** match server (**FR26**).
+  - [x] Handle **404** / **400** with mapped user-facing messages; retry policy consistent with project rules (no blind **POST** retry; list refetch retry may already exist from **3.2**).
+- [x] **Tests** (AC: #8, #9)
+  - [x] Vitest + Testing Library: row states and mutation-disabled behavior with mocked API.
+  - [x] Playwright: three journeys as specified; align with `e2e/` config from Epic 1.
 
 ## Dev Notes
 
@@ -82,14 +82,39 @@ so that **I can manage my list at a glance** (**FR4–FR8**, **FR7**, **UX-DR3**
 
 - **UX-DR9** completed vs disabled distinction; **UX-DR10** metadata sizing; **UX-DR4** button hierarchy for Delete vs primary actions ([Source: `_bmad-output/planning-artifacts/epics.md`](../planning-artifacts/epics.md) § UX Design Requirements).
 
+## Change Log
+
+- **2026-04-26:** Implemented `TodoItem`, PATCH/DELETE client + mutations, row errors, Vitest + Playwright; fixed CORS preflight to allow **PATCH**/**DELETE** from the SPA (default `@fastify/cors` allow-methods omitted them); `e2e-dev-stack.sh` honors **`E2E_API_PORT`** / **`PORT`** for alternate API ports.
+
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Composer (Cursor agent)
 
 ### Debug Log References
 
+- E2E failures traced to CORS `Access-Control-Allow-Methods` missing PATCH/DELETE (browser `Failed to fetch`); fixed in `api/plugins/cors.js` with integration coverage.
+
 ### Completion Notes List
 
+- **AC1–7:** `TodoItem.tsx` — `label`+`htmlFor` checkbox; `text-fg-completed` + `line-through` for completed; metadata via `toLocaleString`; ghost Delete + `aria-label`; `patchTodo` / `deleteTodo` in `todoApi.ts` (204 no JSON); row `role="alert"` errors from `mapApiError`; pending `disabled` + opacity/cursor on checkbox + Delete.
+- **AC5:** `usePatchTodoMutation` (optimistic `completed` + `onSuccess` merge server todo) and `useDeleteTodoMutation` (`invalidateQueries` on success); `mutationKey` `['todos','patch']` / `['todos','delete']`.
+- **AC8–9:** `TodoItem.test.tsx`, `todoApi.test.ts`, `e2e/tests/todo-row-actions.spec.ts`.
+- **Infra:** `scripts/e2e-dev-stack.sh` uses `PORT` from `E2E_API_PORT` when set.
+
 ### File List
+
+- `api/plugins/cors.js`
+- `api/test/integration/cors-preflight.test.js`
+- `client/src/api/todoApi.ts`
+- `client/src/api/todoApi.test.ts`
+- `client/src/todos/TodoItem.tsx`
+- `client/src/todos/TodoItem.test.tsx`
+- `client/src/todos/TodoList.tsx`
+- `client/src/todos/usePatchTodoMutation.ts`
+- `client/src/todos/useDeleteTodoMutation.ts`
+- `e2e/tests/todo-row-actions.spec.ts`
+- `scripts/e2e-dev-stack.sh`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/3-5-todo-rows-complete-uncomplete-delete-metadata-and-styling.md`

@@ -13,5 +13,7 @@ module.exports = fp(async function corsEnvPlugin(fastify, _opts) {
 
   await fastify.register(require('@fastify/cors'), {
     origin: String(raw).trim(),
+    // Default allow-list omitted PATCH/DELETE → browser preflight blocked todo mutations from the SPA.
+    methods: ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'],
   })
 })

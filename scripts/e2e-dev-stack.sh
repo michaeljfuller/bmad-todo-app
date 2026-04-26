@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 export DATABASE_PATH="${DATABASE_PATH:-$ROOT/api/data/e2e.db}"
+# API port (default 3000). Override when 3000 is already in use, e.g. `E2E_API_PORT=13087 npm run dev:e2e-stack`.
+export PORT="${E2E_API_PORT:-${PORT:-3000}}"
 # E2E client uses 5199 so `npm run dev` (5173/5174) does not collide with Playwright.
 export CORS_ORIGIN="${CORS_ORIGIN:-http://127.0.0.1:5199}"
 mkdir -p "$(dirname "$DATABASE_PATH")"
@@ -15,5 +17,5 @@ npm run db:migrate --workspace=api
 # Use `npm run start` (no `fastify -w` watch). Watch mode forks a child + chokidar; that stack often
 # exits non‑zero on GitHub Actions while plain `start` is stable for CI E2E.
 exec npx concurrently --kill-others-on-fail --names api,client \
-  "FASTIFY_ADDRESS=127.0.0.1 npm run start --workspace api" \
-  "npx wait-on http://127.0.0.1:3000/todos -t 120000 && VITE_API_BASE_URL=http://127.0.0.1:3000 npm run build --workspace client && npm run preview --workspace client -- --port 5199 --host 127.0.0.1 --strictPort"
+  "FASTIFY_ADDRESS=127.0.0.1 PORT=$PORT npm run start --workspace api" \
+  "npx wait-on http://127.0.0.1:${PORT}/todos -t 120000 && VITE_API_BASE_URL=http://127.0.0.1:${PORT} npm run build --workspace client && npm run preview --workspace client -- --port 5199 --host 127.0.0.1 --strictPort"

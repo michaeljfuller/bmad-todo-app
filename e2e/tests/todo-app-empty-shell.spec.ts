@@ -1,12 +1,21 @@
 import { expect, test } from '@playwright/test';
 
+import { clearAllTodos } from '../helpers/clearAllTodos';
+
 /**
  * Story 3.3 AC#5: `baseURL` is `http://127.0.0.1:5199` (see `e2e/playwright.config.ts`).
  * Stack: `npm run dev:e2e-stack` — API + Vite preview; client uses `VITE_API_BASE_URL`.
  * CI sets `DATABASE_PATH` to a fresh temp file → empty todos. Locally, delete
  * `api/data/e2e.db` (or point `DATABASE_PATH` at a new file) if you need an empty list.
+ *
+ * Other specs share the same SQLite file and may create todos first (`fullyParallel`),
+ * so we clear via the API before this describe to avoid flaky ordering.
  */
 test.describe('todo app empty shell (Story 3.3)', () => {
+  test.beforeEach(async ({ request }) => {
+    await clearAllTodos(request);
+  });
+
   test('shows title, empty state copy, and composer when there are no todos', async ({
     page,
   }) => {

@@ -1,6 +1,6 @@
 # Story 3.5: Todo rows — complete, uncomplete, delete, metadata, and styling
 
-Status: review
+Status: done
 
 <!-- Ultimate context engine analysis completed — comprehensive developer guide created. -->
 
@@ -85,6 +85,7 @@ so that **I can manage my list at a glance** (**FR4–FR8**, **FR7**, **UX-DR3**
 ## Change Log
 
 - **2026-04-26:** Implemented `TodoItem`, PATCH/DELETE client + mutations, row errors, Vitest + Playwright; fixed CORS preflight to allow **PATCH**/**DELETE** from the SPA (default `@fastify/cors` allow-methods omitted them); `e2e-dev-stack.sh` honors **`E2E_API_PORT`** / **`PORT`** for alternate API ports.
+- **2026-04-26:** Code review (parallel layers + triage): no actionable findings; story marked **done**; sprint status synced.
 
 ## Dev Agent Record
 
@@ -98,6 +99,7 @@ Composer (Cursor agent)
 
 ### Completion Notes List
 
+- **2026-04-26 (post-review):** Full `npm test` (client Vitest + api integration) re-run after review — all green. Story and sprint status set to **done**.
 - **AC1–7:** `TodoItem.tsx` — `label`+`htmlFor` checkbox; `text-fg-completed` + `line-through` for completed; metadata via `toLocaleString`; ghost Delete + `aria-label`; `patchTodo` / `deleteTodo` in `todoApi.ts` (204 no JSON); row `role="alert"` errors from `mapApiError`; pending `disabled` + opacity/cursor on checkbox + Delete.
 - **AC5:** `usePatchTodoMutation` (optimistic `completed` + `onSuccess` merge server todo) and `useDeleteTodoMutation` (`invalidateQueries` on success); `mutationKey` `['todos','patch']` / `['todos','delete']`.
 - **AC8–9:** `TodoItem.test.tsx`, `todoApi.test.ts`, `e2e/tests/todo-row-actions.spec.ts`.

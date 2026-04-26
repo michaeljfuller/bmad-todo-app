@@ -6,7 +6,49 @@ on:
   pull_request:
     branches: [main, master]
 
+# Optional compose smoke (Story 4.4, AC2): not enabled here by default — extra CI minutes
+# and duplicate coverage vs the existing E2E job. To promote later, add steps that:
+#   1) docker compose up -d --build
+#   2) Wait for health: API interval 10s × retries 6 + start_period 45s → allow ~2m buffer;
+#      web depends_on api healthy + start_period 15s.
+#   3) curl -fsS http://127.0.0.1:${API_PORT:-3000}/health and /ready; curl -fsS http://127.0.0.1:${WEB_PORT:-8080}/
+#   4) docker compose down -v (teardown). Alternatively run Epic 3 Playwright with COMPOSE_UP=1
+#      and longer timeout if full UI regression on the composed stack is worth the cost.
+
 jobs:
+  docker-images:
+    name: Docker image builds (api + web)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Image tag suffix (ci vs pr-<n>)
+        id: tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "suffix=pr-${{ github.event.number }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "suffix=ci" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build API image (docker/api.Dockerfile)
+        env:
+          DOCKER_BUILDKIT: "1"
+        run: |
+          set -euxo pipefail
+          docker build -f docker/api.Dockerfile -t "bmad-todo-api:${{ steps.tag.outputs.suffix }}" .
+
+      - name: Build web image (docker/web.Dockerfile)
+        env:
+          DOCKER_BUILDKIT: "1"
+        run: |
+          set -euxo pipefail
+          docker build -f docker/web.Dockerfile \
+            --build-arg VITE_API_BASE_URL=http://localhost:3000 \
+            -t "bmad-todo-web:${{ steps.tag.outputs.suffix }}" .
+
   api-integration:
     name: API integration tests
     runs-on: ubuntu-latest

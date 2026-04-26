@@ -1,6 +1,6 @@
 # Story 4.4: Container CI and documentation for deploy-shaped workflows
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -28,13 +28,13 @@ So that **container regressions are caught before merge** and **runbooks match h
 
 ## Tasks / Subtasks
 
-- [ ] Add a **CI job** (or stage) that builds **`docker/api.Dockerfile`** and **`docker/web.Dockerfile`** on **`ubuntu-latest`**, with **Node-free** image build unless a build stage needs repo context—follow existing **`.github/workflows/ci.yml`** style (checkout, minimal secrets). (AC: #1)
-  - [ ] Use **`docker compose build`** *or* two **`docker build`** invocations; pin **Docker BuildKit** behavior if the team standardizes on it.
-  - [ ] Fail the job on **any** build error; keep logs readable (tag images with **`ci`** / **`pr-${{ github.event.number }}`** or **`local`** only—no push required unless product asks).
-- [ ] Document **optional compose smoke** (commands, timeouts, health URLs, when to add a workflow step). (AC: #2)
-  - [ ] If adding a workflow step: **start compose**, **wait-for-healthy**, **curl** or **`docker compose run`** smoke, **teardown**; consider **not** duplicating full Playwright unless runtime is acceptable.
-- [ ] Extend **[`README.md`](../../README.md)** with **Run with Docker**: prerequisites, env from **`.env.example`**, ports, volumes, troubleshooting. (AC: #3)
-- [ ] Add a short **Production / TLS (NFR-S2)** subsection (or link to Architecture) clarifying **termination at proxy** and **no TLS inside** default Node static setup unless changed. (AC: #4)
+- [x] Add a **CI job** (or stage) that builds **`docker/api.Dockerfile`** and **`docker/web.Dockerfile`** on **`ubuntu-latest`**, with **Node-free** image build unless a build stage needs repo context—follow existing **`.github/workflows/ci.yml`** style (checkout, minimal secrets). (AC: #1)
+  - [x] Use **`docker compose build`** *or* two **`docker build`** invocations; pin **Docker BuildKit** behavior if the team standardizes on it.
+  - [x] Fail the job on **any** build error; keep logs readable (tag images with **`ci`** / **`pr-${{ github.event.number }}`** or **`local`** only—no push required unless product asks).
+- [x] Document **optional compose smoke** (commands, timeouts, health URLs, when to add a workflow step). (AC: #2)
+  - [x] If adding a workflow step: **start compose**, **wait-for-healthy**, **curl** or **`docker compose run`** smoke, **teardown**; consider **not** duplicating full Playwright unless runtime is acceptable.
+- [x] Extend **[`README.md`](../../README.md)** with **Run with Docker**: prerequisites, env from **`.env.example`**, ports, volumes, troubleshooting. (AC: #3)
+- [x] Add a short **Production / TLS (NFR-S2)** subsection (or link to Architecture) clarifying **termination at proxy** and **no TLS inside** default Node static setup unless changed. (AC: #4)
 
 ## Dev Notes
 
@@ -92,19 +92,34 @@ No **`4-3-*.md`** implementation artifact exists yet in **`implementation-artifa
 - Prefer **`docker compose`** (V2 plugin) over legacy **`docker-compose`** binary in docs and CI.
 - **`DOCKER_BUILDKIT=1`** is default on current GHA Ubuntu images; only set explicitly if debugging cache issues.
 
+## Change Log
+
+- **2026-04-26:** Added **`docker-images`** CI job (dual **`docker build`**, **`DOCKER_BUILDKIT=1`**, tags **`ci`** / **`pr-<n>`**); workflow header comments for optional compose smoke; README **Run with Docker** (prereqs, `.env.example`, stack, image-only builds, optional smoke, troubleshooting, **NFR-S2**). Sprint status → **review** for this story.
+
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Composer (Cursor agent)
 
 ### Debug Log References
 
+_(none)_
+
 ### Completion Notes List
+
+- **AC1:** `.github/workflows/ci.yml` — job **`docker-images`** on **`ubuntu-latest`**: checkout, tag suffix **`pr-${{ github.event.number }}`** vs **`ci`**, **`docker build -f docker/api.Dockerfile`**, **`docker build -f docker/web.Dockerfile --build-arg VITE_API_BASE_URL=http://localhost:3000`**, **`DOCKER_BUILDKIT=1`**. No registry push.
+- **AC2:** Optional compose smoke documented in workflow comments (wait windows, **`/health`** / **`/ready`**, web `/`, teardown, cost vs Playwright) and README **Optional compose smoke**; no new workflow step (keeps CI cost down; E2E job unchanged).
+- **AC3:** README **`## Run with Docker`** — prerequisites (Docker 24+ / Compose V2), **`.env.example`**, **`docker compose up --build`**, ports, **`sqlite_data`** volume, expanded troubleshooting table.
+- **AC4:** README **Production / TLS (NFR-S2)** — TLS at proxy edge, HTTP inside stack, no secrets in images / no committed **`.env`**, link to architecture.
+- **Tests:** `npm test` at repo root (client Vitest, API node:test, compose contract) — all green. Docker builds not runnable in this sandbox; validated via workflow YAML + existing compose contract test.
 
 ### File List
 
-_(filled by dev agent)_
+- `.github/workflows/ci.yml`
+- `README.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/4-4-container-ci-and-documentation-for-deploy-shaped-workflows.md`
 
 ---
 

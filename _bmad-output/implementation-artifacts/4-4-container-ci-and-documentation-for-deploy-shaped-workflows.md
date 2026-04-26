@@ -1,6 +1,6 @@
 # Story 4.4: Container CI and documentation for deploy-shaped workflows
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -35,6 +35,19 @@ So that **container regressions are caught before merge** and **runbooks match h
   - [x] If adding a workflow step: **start compose**, **wait-for-healthy**, **curl** or **`docker compose run`** smoke, **teardown**; consider **not** duplicating full Playwright unless runtime is acceptable.
 - [x] Extend **[`README.md`](../../README.md)** with **Run with Docker**: prerequisites, env from **`.env.example`**, ports, volumes, troubleshooting. (AC: #3)
 - [x] Add a short **Production / TLS (NFR-S2)** subsection (or link to Architecture) clarifying **termination at proxy** and **no TLS inside** default Node static setup unless changed. (AC: #4)
+
+### Review Findings
+
+- [x] [Review][Patch] **README CI section** claimed **`npm run test:e2e`** for the GitHub job; CI actually runs **`dev:e2e-stack`** + **`wait-on`** + **`npx playwright test`** with **`PLAYWRIGHT_E2E_EXTERNAL_SERVER=1`**. README **## CI** updated to match [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) and to point locals at **`npm run test:e2e`** — fixed 2026-04-26.
+
+### Senior Developer Review (AI)
+
+**Review date:** 2026-04-26  
+**Outcome:** Approve  
+
+#### Action Items
+
+- [x] README **## CI** E2E description aligned with workflow (external stack + Playwright).
 
 ## Dev Notes
 
@@ -95,6 +108,7 @@ No **`4-3-*.md`** implementation artifact exists yet in **`implementation-artifa
 ## Change Log
 
 - **2026-04-26:** Added **`docker-images`** CI job (dual **`docker build`**, **`DOCKER_BUILDKIT=1`**, tags **`ci`** / **`pr-<n>`**); workflow header comments for optional compose smoke; README **Run with Docker** (prereqs, `.env.example`, stack, image-only builds, optional smoke, troubleshooting, **NFR-S2**). Sprint status → **review** for this story.
+- **2026-04-26:** Code review — README **## CI** E2E steps corrected vs **`ci.yml`**; story and sprint status → **done**.
 
 ## Dev Agent Record
 
@@ -113,6 +127,7 @@ _(none)_
 - **AC3:** README **`## Run with Docker`** — prerequisites (Docker 24+ / Compose V2), **`.env.example`**, **`docker compose up --build`**, ports, **`sqlite_data`** volume, expanded troubleshooting table.
 - **AC4:** README **Production / TLS (NFR-S2)** — TLS at proxy edge, HTTP inside stack, no secrets in images / no committed **`.env`**, link to architecture.
 - **Tests:** `npm test` at repo root (client Vitest, API node:test, compose contract) — all green. Docker builds not runnable in this sandbox; validated via workflow YAML + existing compose contract test.
+- **Code review (2026-04-26):** Parallel review layers (diff vs `main`): AC coverage satisfied; one doc inaccuracy in README **## CI** (E2E job description) — corrected. No open patch or decision items.
 
 ### File List
 

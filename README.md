@@ -97,7 +97,7 @@ npm run build --workspace client
 
 ## Build container images
 
-Build from the **repository root** so `package-lock.json` and npm workspaces resolve correctly. Dockerfiles are multi-stage; **API** and **web** final stages run as **non-root**. Story **4.3** adds root **`docker compose`** wiring (healthchecks, SQLite volume)—this section is **image build + run** only.
+Build from the **repository root** so `package-lock.json` and npm workspaces resolve correctly. Dockerfiles are multi-stage; **API** and **web** final stages run as **non-root**.
 
 ### API image
 
@@ -115,7 +115,7 @@ docker run --rm \
   bmad-todo-api:local
 ```
 
-Migrations are **not** run automatically in the image `CMD`; run once when deploying with the **same** `DATABASE_PATH` and **`/data` volume** (or bind mount) you use for the long-running container (see [`api/package.json`](api/package.json) `db:migrate`).
+On **API startup**, the **`database`** plugin opens SQLite and runs **Drizzle migrations** before serving traffic. You can still run **`npm run db:migrate --workspace=api`** manually against a volume when doing operator-only workflows (see [`api/package.json`](api/package.json) `db:migrate`).
 
 **Migrate (one-shot)** — example using a named volume so the DB file survives the container:
 
@@ -166,6 +166,38 @@ Then open `http://127.0.0.1:8080/` — expect **200** and the SPA shell (`index.
 
 Images are built for the **daemon’s default platform** (e.g. **linux/arm64** on Apple Silicon, **linux/amd64** on typical Linux CI). To target CI explicitly: `docker buildx build --platform linux/amd64 -f docker/api.Dockerfile .` (and add **`linux/arm64`** to `--platform` when publishing multi-arch).
 
+## Run with Docker Compose
+
+From the **repository root**, optional: copy **[`.env.example`](.env.example)** → **`.env`** to override ports and URLs (defaults match the examples below).
+
+```bash
+docker compose up --build
+```
+
+- **Web (SPA):** [http://localhost:8080](http://localhost:8080) (override with **`WEB_PORT`** in `.env`)
+- **API:** [http://localhost:3000](http://localhost:3000) (override with **`API_PORT`** in `.env`)
+
+**Networking:** Services use bridge network **`app_net`**. **`VITE_API_BASE_URL`** is a **build arg** for the **web** image — set it to the URL the **browser** uses to reach the API (defaults to `http://localhost:3000`). **`CORS_ORIGIN`** must be the **browser origin** of the SPA (defaults to `http://localhost:8080`), not an internal Docker DNS name.
+
+**SQLite:** The **api** service stores the DB at **`/data/todos.db`** on named volume **`sqlite_data`**. After **`docker compose restart api`** (or stop/start without **`docker compose down -v`**), todos persist.
+
+**Wipe database data:** `docker compose down -v` removes the named volume and deletes the SQLite file.
+
+**Health checks:**
+
+- **API (Compose):** **`GET /ready`** — readiness (SQLite + migrations + schema probe). The API image’s Dockerfile **`HEALTHCHECK`** still targets **`GET /health`** for liveness-style checks when running the container outside Compose.
+- **Web:** HTTP **200** on **`/`** (nginx + static `index.html`); Compose repeats a **`wget`** probe on port **8080** inside the container.
+
+**Startup order:** **`web`** has **`depends_on: api`** with **`condition: service_healthy`**, so the static site starts only after the API reports ready.
+
+**Logs (Pino on stdout/stderr, FR25):**
+
+```bash
+docker compose logs -f api
+```
+
+**Troubleshooting:** If **`web`** stays waiting or **`api`** never becomes healthy, inspect logs: migration/DB errors, or **`/ready`** returning **503** (permissions on **`/data`**, missing migrations). Confirm **`CORS_ORIGIN`** matches the URL you use in the browser for the SPA.
+
 ## Project layout
 
 | Path        | Role                                      |
@@ -175,6 +207,8 @@ Images are built for the **daemon’s default platform** (e.g. **linux/arm64** o
 | `e2e/`      | Playwright config and specs               |
 | `scripts/`  | Root automation (e.g. `bootstrap.mjs`)    |
 | `docker/`   | Production **`*.Dockerfile`** and nginx config for the static SPA |
+| `docker-compose.yml` | **API + web** stack, **`app_net`**, SQLite volume, healthchecks |
+| `.env.example` (root) | Defaults for **Compose** build args and service env (copy to **`.env`**) |
 
 ## Troubleshooting
 
@@ -190,7 +224,7 @@ Images are built for the **daemon’s default platform** (e.g. **linux/arm64** o
 The following were **not** part of closing **Epic 1**; some have landed in later epics:
 
 - **Multi-stage Docker images** for API + static web → **`docker/*.Dockerfile`** and the **Build container images** section above (**Epic 4**, Story 4.2).
-- **Root `docker compose`** stack (healthchecks, SQLite volume, service wiring) → **Story 4.3** (README will gain compose steps there).
+- **Root `docker compose`** stack → **Story 4.3** (see **Run with Docker Compose** above). Further **CI** compose smoke → **Story 4.4**.
 
 **API HTTP integration tests** under **`api/test/integration/`** are part of **Epic 2** (already in-repo); see **Testing** above for how to run them via the API workspace.
 

@@ -115,7 +115,30 @@ docker run --rm \
   bmad-todo-api:local
 ```
 
-Migrations are **not** run automatically in the image `CMD`; run once when deploying, e.g. `docker run --rm ... bmad-todo-api:local npm run db:migrate --workspace=api` with the same env/volume as the long-running container (see [`api/package.json`](api/package.json) `db:migrate`).
+Migrations are **not** run automatically in the image `CMD`; run once when deploying with the **same** `DATABASE_PATH` and **`/data` volume** (or bind mount) you use for the long-running container (see [`api/package.json`](api/package.json) `db:migrate`).
+
+**Migrate (one-shot)** — example using a named volume so the DB file survives the container:
+
+```bash
+docker volume create bmad-todo-sqlite
+
+docker run --rm \
+  -e DATABASE_PATH=/data/todos.db \
+  -v bmad-todo-sqlite:/data \
+  bmad-todo-api:local \
+  npm run db:migrate --workspace=api
+```
+
+Then start the API with the same volume, for example:
+
+```bash
+docker run --rm \
+  -e DATABASE_PATH=/data/todos.db \
+  -e CORS_ORIGIN=http://127.0.0.1:8080 \
+  -p 3000:3000 \
+  -v bmad-todo-sqlite:/data \
+  bmad-todo-api:local
+```
 
 The image includes a **`HEALTHCHECK`** that **GET**s `http://127.0.0.1:${PORT:-3000}/health` (requires **`curl`** in the image).
 

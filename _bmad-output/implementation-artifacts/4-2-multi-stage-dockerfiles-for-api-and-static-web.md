@@ -1,6 +1,6 @@
 # Story 4.2: Multi-stage Dockerfiles for API and static web
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -126,7 +126,12 @@ Composer (Cursor agent)
 ## Change Log
 
 - **2026-04-26:** Story 4.2 — multi-stage API + web Dockerfiles, nginx SPA config, README container build/run docs, `.dockerignore`; sprint status `4-2` → `review`.
+- **2026-04-26:** Code review — README migrate/volume copy-paste example; story + sprint `4-2` → `done`.
 
 ## Story completion status
 
-- **review** — Implementation complete; Docker CLI smoke builds pending on a machine with Docker installed.
+- **done** — Code review patch applied (README migrate + volume example); Docker CLI smoke builds still recommended on a host with Docker.
+
+### Review Findings
+
+- [x] [Review][Patch] README migrate example is not copy-pasteable — Fixed: added named-volume migrate one-shot and matching API `docker run` with `-v` (see README **Migrate (one-shot)**). [README.md:~118]

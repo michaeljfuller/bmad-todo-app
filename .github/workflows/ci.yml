@@ -16,6 +16,27 @@ on:
 #      and longer timeout if full UI regression on the composed stack is worth the cost.
 
 jobs:
+  unit-coverage:
+    name: Unit tests and coverage (≥70%)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Client + API coverage thresholds
+        env:
+          NODE_ENV: test
+          DATABASE_PATH: ${{ runner.temp }}/bmad-api-coverage.db
+          CORS_ORIGIN: http://localhost:5173
+        run: npm run test:coverage
+
   docker-images:
     name: Docker image builds (api + web)
     runs-on: ubuntu-latest

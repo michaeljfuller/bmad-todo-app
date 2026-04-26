@@ -50,7 +50,7 @@ ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 CMD-SHELL \
-  curl -fsS "http://127.0.0.1:${PORT:-3000}/health" > /dev/null || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 \
+  CMD ["sh", "-c", "curl -fsS \"http://127.0.0.1:$${PORT:-3000}/health\" > /dev/null || exit 1"]
 
 CMD ["npm", "run", "start", "--workspace=api"]

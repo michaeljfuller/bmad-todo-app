@@ -46,13 +46,13 @@ export function AddTodoForm() {
             }}
             aria-invalid={isError}
             aria-describedby={isError ? 'add-todo-error' : undefined}
-            className="rounded-md border border-fg-primary/15 bg-surface-panel px-3 py-2 text-base text-fg-primary placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page disabled:cursor-not-allowed disabled:opacity-60"
+            className="min-h-[44px] rounded-md border border-fg-primary/15 bg-surface-panel px-3 py-2 text-base text-fg-primary placeholder:text-fg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page disabled:cursor-not-allowed disabled:opacity-60"
           />
         </label>
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex shrink-0 justify-center rounded-md bg-accent-primary px-4 py-2 text-sm font-medium text-on-accent focus-visible:ring-2 focus-visible:ring-fg-primary focus-visible:ring-offset-2 focus-visible:ring-offset-accent-primary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-md bg-accent-primary px-4 text-sm font-medium text-on-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-accent-primary disabled:cursor-not-allowed disabled:opacity-60"
         >
           Add
         </button>

@@ -30,28 +30,32 @@ export function TodoItem({ todo }: TodoItemProps) {
 
   return (
     <li className="rounded-md border border-fg-primary/15 bg-surface-panel/40 px-3 py-2">
-      <div className="flex items-start gap-3">
-        <input
-          id={checkboxId}
-          type="checkbox"
-          checked={todo.completed}
-          disabled={pending}
-          onChange={(ev) => {
-            if (isError) clearRowErrors()
-            patchMutation.mutate({
-              id: todo.id,
-              completed: ev.target.checked,
-            })
-          }}
-          className="mt-1 h-4 w-4 shrink-0 rounded border-fg-primary/30 text-accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page disabled:cursor-not-allowed disabled:opacity-60"
-        />
+      <div className="flex items-center gap-3">
+        <span className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center self-center">
+          <input
+            id={checkboxId}
+            type="checkbox"
+            checked={todo.completed}
+            disabled={pending}
+            onChange={(ev) => {
+              if (isError) clearRowErrors()
+              patchMutation.mutate({
+                id: todo.id,
+                completed: ev.target.checked,
+              })
+            }}
+            aria-labelledby={`${checkboxId}-label`}
+            className="h-4 w-4 rounded border-fg-primary/30 text-accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel disabled:cursor-not-allowed disabled:opacity-60"
+          />
+        </span>
         <div className="min-w-0 flex-1">
           <label
+            id={`${checkboxId}-label`}
             htmlFor={checkboxId}
             className={
               todo.completed
-                ? 'block cursor-pointer text-base leading-snug text-fg-completed line-through'
-                : 'block cursor-pointer text-base leading-snug text-fg-primary'
+                ? 'block cursor-pointer break-words text-base leading-snug text-fg-completed line-through'
+                : 'block cursor-pointer break-words text-base leading-snug text-fg-primary'
             }
           >
             {todo.text}
@@ -69,7 +73,7 @@ export function TodoItem({ todo }: TodoItemProps) {
             if (isError) clearRowErrors()
             deleteMutation.mutate(todo.id)
           }}
-          className="inline-flex shrink-0 items-center justify-center rounded-md border border-fg-primary/25 bg-transparent px-2.5 py-1 text-sm font-medium text-fg-secondary hover:bg-fg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center self-center rounded-md border border-fg-primary/25 bg-transparent px-3 text-sm font-medium text-fg-secondary hover:bg-fg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface-panel disabled:cursor-not-allowed disabled:opacity-60"
         >
           Delete
         </button>

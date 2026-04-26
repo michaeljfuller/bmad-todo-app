@@ -52,7 +52,9 @@ describe('TodoApp', () => {
     const scroll = screen.getByTestId('todo-list-scroll')
     expect(scroll).toHaveClass('min-h-0', 'flex-1', 'overflow-y-auto')
 
-    expect(screen.getByRole('heading', { name: /todo app/i })).toBeInTheDocument()
+    const heading = screen.getByRole('heading', { name: /todo app/i })
+    expect(heading).toBeInTheDocument()
+    expect(heading).toHaveAttribute('tabindex', '0')
     expect(screen.getByRole('status')).toHaveTextContent(/nothing here yet/i)
     expect(screen.getByText(/add a task below to get started/i)).toBeInTheDocument()
     expect(screen.getByTestId('add-todo-form')).toBeInTheDocument()

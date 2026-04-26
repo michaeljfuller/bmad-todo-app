@@ -1,6 +1,6 @@
 # Story 3.6: Responsive layout, keyboard flows, and motion preferences
 
-Status: ready-for-dev
+Status: done
 
 <!-- Ultimate context engine analysis completed — comprehensive developer guide created. -->
 
@@ -20,22 +20,22 @@ so that **I am not blocked by viewport or input mode** (**FR15**, **FR16**, **NF
 
 ## Tasks / Subtasks
 
-- [ ] **Prerequisites** (AC: all)
-  - [ ] Confirm **Story 3.1** (Tailwind tokens), **3.3** (TodoApp shell / Direction 9), **3.4** (AddTodoForm), and **3.5** (Todo rows) are implemented — this story **polishes** layout, focus, and motion on top of those components; if executed early, still apply changes in the **intended** `TodoApp` / `TodoList` / `TodoItem` / `AddTodoForm` structure from Architecture.
-- [ ] **Responsive layout** (AC: #1)
-  - [ ] Audit **primary column** width: mobile-first **full width** with horizontal padding; optional **max-width** on large breakpoints (**UX-DR7**); ensure list + composer do not force **`overflow-x`** on `body` / root shell.
-  - [ ] Enforce **~44px** minimum hit areas on **Add** primary control and row actions (checkbox hit slop and delete button) without breaking **Direction 9** flex layout (`flex-1`, `min-h-0` on scroll region preserved).
-- [ ] **Keyboard order & semantics** (AC: #2)
-  - [ ] Ensure **DOM order** matches **title → list → composer**; avoid positive **`tabIndex`** except rare focus fixes (prefer reordering markup).
-  - [ ] Verify **checkbox** is a real **`input type="checkbox"`** (or equivalent with correct role) with **label** / **`aria-labelledby`** to todo text (**UX-DR6**, builds on 3.5).
-  - [ ] Confirm **Delete** has an **accessible name** (visible text or **`aria-label`**) and remains reachable by keyboard.
-- [ ] **Focus-visible styling** (AC: #3)
-  - [ ] Add shared **`focus-visible`** ring utilities (Tailwind `ring-*` / `outline-*`) using **token colors** that meet contrast on **dark** surfaces; apply consistently to buttons, inputs, and custom row controls.
-- [ ] **`prefers-reduced-motion`** (AC: #4)
-  - [ ] Wrap **CSS transitions** and **spinner/animation** classes in **`@media (prefers-reduced-motion: reduce)`** overrides **or** Tailwind **`motion-reduce:*`** variants so loading and micro-interactions respect user preference.
-- [ ] **Tests & documentation** (AC: #5)
-  - [ ] Prefer **Playwright** (existing **`e2e/`** scaffold) for a **keyboard smoke**: tab to composer, Enter to submit (with mocks or live API per project norm), Space on checkbox — **or** **Vitest** + Testing Library **`userEvent.keyboard`** for focus order where reliable.
-  - [ ] If automation is incomplete, **README** section: numbered steps for **keyboard-only** path and **reduced-motion** check (OS/browser setting + expected behavior).
+- [x] **Prerequisites** (AC: all)
+  - [x] Confirm **Story 3.1** (Tailwind tokens), **3.3** (TodoApp shell / Direction 9), **3.4** (AddTodoForm), and **3.5** (Todo rows) are implemented — this story **polishes** layout, focus, and motion on top of those components; if executed early, still apply changes in the **intended** `TodoApp` / `TodoList` / `TodoItem` / `AddTodoForm` structure from Architecture.
+- [x] **Responsive layout** (AC: #1)
+  - [x] Audit **primary column** width: mobile-first **full width** with horizontal padding; optional **max-width** on large breakpoints (**UX-DR7**); ensure list + composer do not force **`overflow-x`** on `body` / root shell.
+  - [x] Enforce **~44px** minimum hit areas on **Add** primary control and row actions (checkbox hit slop and delete button) without breaking **Direction 9** flex layout (`flex-1`, `min-h-0` on scroll region preserved).
+- [x] **Keyboard order & semantics** (AC: #2)
+  - [x] Ensure **DOM order** matches **title → list → composer**; avoid positive **`tabIndex`** except rare focus fixes (prefer reordering markup).
+  - [x] Verify **checkbox** is a real **`input type="checkbox"`** (or equivalent with correct role) with **label** / **`aria-labelledby`** to todo text (**UX-DR6**, builds on 3.5).
+  - [x] Confirm **Delete** has an **accessible name** (visible text or **`aria-label`**) and remains reachable by keyboard.
+- [x] **Focus-visible styling** (AC: #3)
+  - [x] Add shared **`focus-visible`** ring utilities (Tailwind `ring-*` / `outline-*`) using **token colors** that meet contrast on **dark** surfaces; apply consistently to buttons, inputs, and custom row controls.
+- [x] **`prefers-reduced-motion`** (AC: #4)
+  - [x] Wrap **CSS transitions** and **spinner/animation** classes in **`@media (prefers-reduced-motion: reduce)`** overrides **or** Tailwind **`motion-reduce:*`** variants so loading and micro-interactions respect user preference.
+- [x] **Tests & documentation** (AC: #5)
+  - [x] Prefer **Playwright** (existing **`e2e/`** scaffold) for a **keyboard smoke**: tab to composer, Enter to submit (with mocks or live API per project norm), Space on checkbox — **or** **Vitest** + Testing Library **`userEvent.keyboard`** for focus order where reliable.
+  - [x] If automation is incomplete, **README** section: numbered steps for **keyboard-only** path and **reduced-motion** check (OS/browser setting + expected behavior).
 
 ## Dev Notes
 
@@ -100,10 +100,39 @@ so that **I am not blocked by viewport or input mode** (**FR15**, **FR16**, **NF
 
 ### Agent Model Used
 
-_(filled by dev agent)_
+Composer (Cursor agent)
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- Implemented responsive shell (`min-w-0`, `overflow-x-hidden`, `lg:max-w-2xl`), ~44px targets (Add, checkbox wrapper, Delete, Retry, text field min-height), `break-words` on todo labels.
+- Keyboard: `tabIndex={0}` on page title so Tab order starts at title; `aria-labelledby` on checkbox; unified `focus-visible:ring-focus-ring` (+ appropriate ring offsets) on interactive controls.
+- Motion: `motion-reduce:animate-none` on list skeleton pulse; base `prefers-reduced-motion` scroll-behavior tweak in `index.css`.
+- Tests: `e2e/tests/keyboard-flows.spec.ts` (Tab empty list, Enter submit, title→checkbox Tab, Space toggle with re-focus after mutation); `TodoApp.test.tsx` asserts heading `tabindex="0"`; README manual checklist for QA (keyboard + reduced motion).
+- E2E note: Tab from the last footer control does not wrap to `h1` in Chromium; spec uses `title.focus()` to assert title→list; second Space after PATCH uses `rowCheckbox.focus()` because the row can re-render.
+- Post-review (2026-04-26): README manual checklist — error-state **Retry** in tab order; `index.css` “Pairs to check” #4 aligned with `ring-focus-ring` on **Add**.
+
 ### File List
+
+- `client/src/todos/TodoApp.tsx`
+- `client/src/todos/TodoList.tsx`
+- `client/src/todos/TodoItem.tsx`
+- `client/src/todos/AddTodoForm.tsx`
+- `client/src/todos/QueryErrorBanner.tsx`
+- `client/src/todos/TodoApp.test.tsx`
+- `client/src/index.css`
+- `e2e/tests/keyboard-flows.spec.ts`
+- `README.md`
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/implementation-artifacts/3-6-responsive-layout-keyboard-flows-and-motion-preferences.md`
+
+## Change Log
+
+- 2026-04-26: Story 3.6 — responsive column, 44px targets, keyboard/focus/motion, Playwright keyboard smoke + README manual checks (`review`).
+- 2026-04-26: Code review — README error-state tab order + `index.css` focus comment alignment (`done`).
+
+### Review Findings
+
+- [x] [Review][Patch] Align `index.css` “Pairs to check” bullet #4 with implementation — primary **Add** uses `ring-focus-ring` + offset tokens, not `ring-fg-primary` as the comment still stated [`client/src/index.css` ~18–20] — fixed 2026-04-26
+- [x] [Review][Patch] Extend README manual Tab order to include **Retry** when the todo query is in **error** state (title → **Retry** → New task → Add) [`README.md` § Manual checks] — fixed 2026-04-26

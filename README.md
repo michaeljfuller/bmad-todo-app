@@ -144,10 +144,18 @@ docker compose up --build
 
 **Health and startup order:** **`web`** uses **`depends_on: api`** with **`condition: service_healthy`**. Compose healthchecks: API probes **`GET /ready`** (readiness); the API Dockerfile **`HEALTHCHECK`** uses **`GET /health`** when you run the API image alone. Web probes **`wget`** on **`http://127.0.0.1:8080/`** inside the container.
 
+Check container health from Compose:
+
+```bash
+docker-compose ps
+```
+
 **Logs:**
 
 ```bash
 docker compose logs -f api
+# or all services:
+docker-compose logs -f
 ```
 
 ### Build images only (same as CI)

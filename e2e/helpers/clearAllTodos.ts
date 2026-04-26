@@ -7,6 +7,13 @@ export function e2eApiBaseUrl(): string {
   return (process.env.E2E_API_BASE_URL ?? DEFAULT_API).replace(/\/$/, '');
 }
 
+/** `GET|POST /todos` (collection), not `/todos/:id`. Matches browser `fetch` URLs for Playwright `route`. */
+export function isTodosCollectionUrl(url: URL, apiBase: string): boolean {
+  const base = new URL(apiBase.replace(/\/$/, ''));
+  if (url.origin !== base.origin) return false;
+  return url.pathname === '/todos';
+}
+
 /** Removes all rows so specs that require an empty list are not affected by run order. */
 export async function clearAllTodos(request: APIRequestContext): Promise<void> {
   const base = e2eApiBaseUrl();

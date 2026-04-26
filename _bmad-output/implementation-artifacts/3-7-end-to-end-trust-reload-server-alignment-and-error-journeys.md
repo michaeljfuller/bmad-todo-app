@@ -1,6 +1,6 @@
 # Story 3.7: End-to-end trust — reload, server alignment, and error journeys
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 

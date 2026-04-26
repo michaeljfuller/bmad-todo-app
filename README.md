@@ -70,9 +70,11 @@ Workspace equivalents: `npm run test --workspace client`, `npm run test --worksp
 npm run test:e2e
 ```
 
-Playwright starts **`npm run dev:e2e-stack`** (see [`scripts/e2e-dev-stack.sh`](scripts/e2e-dev-stack.sh)): it migrates SQLite, runs the **API** on **3000**, builds the **client** with **`VITE_API_BASE_URL=http://127.0.0.1:3000`**, then serves **`vite preview`** on **5199** (not 5173) so tests do not collide with **`npm run dev`**. **`CORS_ORIGIN`** for that stack defaults to **`http://127.0.0.1:5199`**. CI sets **`DATABASE_PATH`** to a temp file for the E2E job (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
+Playwright starts **`npm run dev:e2e-stack`** (see [`scripts/e2e-dev-stack.sh`](scripts/e2e-dev-stack.sh)): it migrates SQLite, runs the **API** on **3000**, builds the **client** with **`VITE_API_BASE_URL=http://127.0.0.1:3000`**, then serves **`vite preview`** on **5199** (not 5173) so tests do not collide with **`npm run dev`**. **`CORS_ORIGIN`** for that stack defaults to **`http://127.0.0.1:5199`**. Unless you override it, **`DATABASE_PATH`** defaults to a **gitignored** file under **`.tmp/`** in the repo root so product E2E does not reuse your dev **`api/data/todos.db`**. CI sets **`DATABASE_PATH`** to a temp file for the E2E job (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
 
 CI installs browsers with **`npm exec --workspace=e2e -- playwright install --with-deps`**; locally, **`playwright install`** is usually enough.
+
+**Product E2E checklist (Story 3.7):** one command **`npm run test:e2e`** from the root; client at **`http://127.0.0.1:5199`**, API at **`http://127.0.0.1:3000`** (override API port with **`E2E_API_PORT`** when starting the stack and set **`E2E_API_BASE_URL`** for Playwright `request` helpers if you change the port). The HTML artifact [`_bmad-output/planning-artifacts/ux-design-directions.html`](_bmad-output/planning-artifacts/ux-design-directions.html) is **reference-only** for humans and is **not** imported or bundled into the app.
 
 ### Manual checks (keyboard & reduced motion, Story 3.6)
 

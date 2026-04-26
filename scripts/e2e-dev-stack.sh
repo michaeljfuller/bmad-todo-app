@@ -3,7 +3,9 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
-export DATABASE_PATH="${DATABASE_PATH:-$ROOT/api/data/e2e.db}"
+# Default: gitignored workspace DB so local E2E does not clobber api/data/todos.db or dev data.
+# CI and explicit runs should set DATABASE_PATH (see .github/workflows/ci.yml).
+export DATABASE_PATH="${DATABASE_PATH:-$ROOT/.tmp/e2e-stack.db}"
 # API port (default 3000). Override when 3000 is already in use, e.g. `E2E_API_PORT=13087 npm run dev:e2e-stack`.
 export PORT="${E2E_API_PORT:-${PORT:-3000}}"
 # E2E client uses 5199 so `npm run dev` (5173/5174) does not collide with Playwright.

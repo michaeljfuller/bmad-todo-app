@@ -23,6 +23,7 @@ function renderApp() {
 describe('App', () => {
   it('renders the app title', async () => {
     renderApp()
+    expect(screen.getByRole('main')).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: /todo app/i }),
     ).toBeInTheDocument()

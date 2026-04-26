@@ -30,6 +30,7 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY --from=deps --chown=appuser:appgroup /app/node_modules ./node_modules
+COPY --from=deps --chown=appuser:appgroup /app/api/node_modules ./api/node_modules
 COPY --from=deps --chown=appuser:appgroup /app/package.json ./package.json
 COPY --from=deps --chown=appuser:appgroup /app/package-lock.json ./package-lock.json
 COPY --from=deps --chown=appuser:appgroup /app/api/package.json ./api/package.json

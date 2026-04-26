@@ -10,6 +10,19 @@ For notes on how AI-assisted workflows were used on this project, see **[AI Usag
 
 Monorepo: **`client/`** (Vite + React + TypeScript), **`api/`** (Fastify), **`e2e/`** (Playwright). Root **`package.json`** uses **npm workspaces**.
 
+## Getting started
+
+If you want to run the app quickly with containers, start from the repo root:
+
+```bash
+cp .env.example .env
+docker-compose up
+```
+
+- Copy **[`.env.example`](.env.example)** to **`.env`** first so Compose has local defaults you can edit.
+- If **3000** (API) or **8080** (web) are already in use, change **`API_PORT`** / **`WEB_PORT`** in **`.env`** before running Compose.
+- After changing API port, also update **`VITE_API_BASE_URL`** and **`CORS_ORIGIN`** in **`.env`** so the browser and API still match.
+
 For deeper technical boundaries, see [`_bmad-output/planning-artifacts/architecture.md`](_bmad-output/planning-artifacts/architecture.md).
 
 ## Prerequisites

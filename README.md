@@ -79,7 +79,7 @@ CI installs browsers with **`npm exec --workspace=e2e -- playwright install --wi
 Automated coverage lives in **`e2e/tests/keyboard-flows.spec.ts`**. For QA without Playwright, use a **320px-wide** (or narrow phone) viewport and verify:
 
 1. **No horizontal scroll** on the main column while scanning the list, toggling completion, deleting, and adding a todo; long task text wraps instead of forcing overflow.
-2. **Tab order:** **Todo app** title → first row **checkbox** → that row **Delete** → repeat for additional rows → **New task** field → **Add** button (Shift+Tab reverses).
+2. **Tab order:** **Todo app** title → first row **checkbox** → that row **Delete** → repeat for additional rows → **New task** field → **Add** button (Shift+Tab reverses). If the list is in **error** state (banner with **Retry**), order is **title** → **Retry** → **New task** → **Add** (no row checkboxes until the error is cleared).
 3. **Space** with focus on a row checkbox toggles complete / active without using the mouse.
 4. **Enter** with focus in **New task** submits the form (same as **Add**) when the text is non-empty.
 5. **Focus ring:** Tab through controls and confirm a **high-contrast** visible ring on buttons, the text field, and checkboxes (not mouse-only `:focus` styling).

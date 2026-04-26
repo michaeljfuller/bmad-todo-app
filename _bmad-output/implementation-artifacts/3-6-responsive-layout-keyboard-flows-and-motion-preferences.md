@@ -1,6 +1,6 @@
 # Story 3.6: Responsive layout, keyboard flows, and motion preferences
 
-Status: review
+Status: done
 
 <!-- Ultimate context engine analysis completed — comprehensive developer guide created. -->
 
@@ -111,6 +111,7 @@ Composer (Cursor agent)
 - Motion: `motion-reduce:animate-none` on list skeleton pulse; base `prefers-reduced-motion` scroll-behavior tweak in `index.css`.
 - Tests: `e2e/tests/keyboard-flows.spec.ts` (Tab empty list, Enter submit, title→checkbox Tab, Space toggle with re-focus after mutation); `TodoApp.test.tsx` asserts heading `tabindex="0"`; README manual checklist for QA (keyboard + reduced motion).
 - E2E note: Tab from the last footer control does not wrap to `h1` in Chromium; spec uses `title.focus()` to assert title→list; second Space after PATCH uses `rowCheckbox.focus()` because the row can re-render.
+- Post-review (2026-04-26): README manual checklist — error-state **Retry** in tab order; `index.css` “Pairs to check” #4 aligned with `ring-focus-ring` on **Add**.
 
 ### File List
 
@@ -129,3 +130,9 @@ Composer (Cursor agent)
 ## Change Log
 
 - 2026-04-26: Story 3.6 — responsive column, 44px targets, keyboard/focus/motion, Playwright keyboard smoke + README manual checks (`review`).
+- 2026-04-26: Code review — README error-state tab order + `index.css` focus comment alignment (`done`).
+
+### Review Findings
+
+- [x] [Review][Patch] Align `index.css` “Pairs to check” bullet #4 with implementation — primary **Add** uses `ring-focus-ring` + offset tokens, not `ring-fg-primary` as the comment still stated [`client/src/index.css` ~18–20] — fixed 2026-04-26
+- [x] [Review][Patch] Extend README manual Tab order to include **Retry** when the todo query is in **error** state (title → **Retry** → New task → Add) [`README.md` § Manual checks] — fixed 2026-04-26

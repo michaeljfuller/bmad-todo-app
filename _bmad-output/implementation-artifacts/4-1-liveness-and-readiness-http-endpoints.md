@@ -1,6 +1,6 @@
 # Story 4.1: Liveness and readiness HTTP endpoints
 
-Status: review
+Status: done
 
 <!-- Ultimate context engine analysis completed - comprehensive developer guide created -->
 
@@ -104,6 +104,7 @@ Composer (Cursor agent)
 
 - Implemented **`GET /health`** → `{ "status": "ok" }` with no DB access; **`GET /ready`** → Drizzle `select().from(todos).limit(1)` with **503** + `{ error: { code: "NOT_READY", message: "Service is not ready" } }` on probe failure; **warn** log with `reqId` + err (no path leak in JSON).
 - Added **`api/schemas/health-ready-contract.js`** route schemas; **`ops`** tag in **`api/plugins/swagger.js`**; integration tests **`api/test/integration/health-ready.test.js`** (`build(t)` + stub `app.db.select` throws for not-ready); extended **`openapi-contract.test.js`** for `/health` and `/ready` paths; Postman Root folder requests for **`GET /health`** / **`GET /ready`**.
+- **2026-04-26:** Code review — adversarial + edge-case + AC audit; no actionable findings; **`review`** → **`done`**.
 
 ### File List
 
@@ -119,3 +120,4 @@ Composer (Cursor agent)
 ## Change Log
 
 - **2026-04-26** — Story 4.1: liveness **`GET /health`**, readiness **`GET /ready`**, OpenAPI + Postman + integration tests; sprint status **in-progress** → **review**.
+- **2026-04-26** — Code review (blind + edge + AC audit): **0** `decision-needed`, **0** `patch`, **0** `defer`; triage clean; **`npm test`** in **client** + **api** workspaces green; sprint status **review** → **done**.
